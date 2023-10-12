@@ -69,7 +69,7 @@ public class QuantityCalculator : MonoBehaviour
 		if (!folytat) return;
 
 		float quantity = CalculateQuantity(atmero / 2f, sebesseg, ido);
-		outputText.text = FormatVolume(quantity);
+		outputText.text = UnitConverter.FormatVolume(quantity / 1000f);
 	}
 
 	/// <summary>
@@ -85,18 +85,5 @@ public class QuantityCalculator : MonoBehaviour
 	{
 		float flow = CalculateFlow(radius, velocity);
 		return flow * time; //ml=cm^3
-	}
-
-	string FormatVolume(float millilitres)
-	{
-		if (millilitres - 1000f >= 0f)
-		{
-			return (millilitres / 1000f).ToString("0.0#") + " l";
-		}
-		else if (millilitres - 100f >= 0f)
-		{
-			return (millilitres / 100f).ToString("0.0#") + " dl";
-		}
-		return millilitres.ToString("0.0#") + " ml";
 	}
 }
