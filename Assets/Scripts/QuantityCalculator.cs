@@ -1,11 +1,14 @@
 using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class QuantityCalculator : MonoBehaviour
 {
 	[SerializeField] TMP_InputField atmeroInput, sebessegInput, idoInput;
 	[SerializeField] TextMeshProUGUI outputText;
+	RectTransform rt;
+	VerticalLayoutGroup verticalLayoutGroup;
 
 	float atmero = 0, sebesseg = 0, ido = 0;
 
@@ -15,6 +18,15 @@ public class QuantityCalculator : MonoBehaviour
 		sebessegInput.text = string.Empty;
 		idoInput.text = string.Empty;
 		outputText.text = string.Empty;
+
+		rt = GetComponent<RectTransform>();
+		verticalLayoutGroup = GetComponent<VerticalLayoutGroup>();
+		
+	}
+
+	private void Update()
+	{
+		rt.sizeDelta = new Vector2(rt.sizeDelta.x, verticalLayoutGroup.preferredHeight);
 	}
 
 	public void Szamitas()
