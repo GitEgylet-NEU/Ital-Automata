@@ -1,3 +1,4 @@
+using System.Linq;
 using TMPro;
 using UnityEngine;
 
@@ -7,13 +8,16 @@ public class FluidContainer : MonoBehaviour
 	[Min(0)] public float width = 1f;
 	[Min(0)] public float height = 1f;
 	[Min(0)] public float thickness = .1f;
+	[Range(0, 360)] public float rotation = 0f;
 	float capacity; // litres
 
 	[Min(0)] public float litres = 0f;
 
 	[SerializeField] TextMeshProUGUI text;
-	[SerializeField] Transform fluid;
 	LineRenderer lineRenderer;
+
+	MeshFilter fluidMeshFilter;
+	MeshRenderer fluidMeshRenderer;
 
 	private void Awake()
 	{
@@ -21,6 +25,16 @@ public class FluidContainer : MonoBehaviour
 		lineRenderer.enabled = true;
 		lineRenderer.positionCount = 4;
 		lineRenderer.useWorldSpace = false;
+
+		fluidMeshFilter = GetComponentInChildren<MeshFilter>();
+		fluidMeshRenderer = GetComponentInChildren<MeshRenderer>();
+		fluidMeshFilter.sharedMesh = new Mesh();
+		fluidMeshFilter.sharedMesh.name = "Fluid";
+	}
+
+	private void OnEnable()
+	{
+		Awake();
 	}
 
 	// Update is called once per frame
@@ -38,9 +52,34 @@ public class FluidContainer : MonoBehaviour
 		{
 			litres = capacity;
 		}
+
 		float neededHeight = UnitConverter.MetricToUnity(UnitConverter.LitreToMetric(litres) / width);
-		fluid.position = new Vector2(transform.position.x, transform.position.y - height / 2 + (neededHeight / 2));
-		fluid.localScale = new Vector2(width, neededHeight);
+
+		Vector3[] vertices = new Vector3[]
+		{
+			new Vector2(-width, neededHeight*2),
+			new Vector2(-width, 0),
+			new Vector2(width, 0),
+			new Vector2(width, neededHeight*2)
+		};
+		int[] triangles = new int[]
+		{
+			0, 1, 2,
+			0, 2, 3
+		};
+		Vector2[] uvs = new Vector2[]
+		{
+			new Vector2(0, 1),
+			new Vector2(0, 0),
+			new Vector2(1, 0),
+			new Vector2(1, 1)
+		};
+		fluidMeshFilter.sharedMesh.vertices = vertices;
+		fluidMeshFilter.sharedMesh.triangles = triangles.Reverse().ToArray();
+		fluidMeshFilter.sharedMesh.uv = uvs;
+		fluidMeshFilter.sharedMesh.RecalculateBounds();
+		fluidMeshFilter.sharedMesh.RecalculateNormals();
+		fluidMeshRenderer.transform.localPosition = new Vector2(0, -height);
 
 		if (capacity == 0 || thickness == 0)
 		{
