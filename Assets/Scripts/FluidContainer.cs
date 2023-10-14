@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
@@ -6,19 +6,23 @@ using UnityEngine;
 [ExecuteAlways]
 public class FluidContainer : MonoBehaviour
 {
-	[Min(0)] public float width = 1f;
-	[Min(0)] public float height = 1f;
-	[Min(0)] public float thickness = .1f;
+	[Min(0)] public float widthMeters = 1f;
+	[Min(0)] public float heightMeters = 1f;
+	[Min(0)] public float thicknessMeters = .1f;
 	[Range(-180, 180)] public float rotation = 0f;
 	float capacity; // litres
 
+	float width, height, thickness;
+
 	[Min(0)] public float litres = 0f;
 
-	[SerializeField] TextMeshProUGUI text;
+	[SerializeField] TextMeshProUGUI text, alphaText, betaText;
 	LineRenderer lineRenderer;
 
 	MeshFilter fluidMeshFilter;
 	MeshRenderer fluidMeshRenderer;
+
+	Vector2 pA, pC;
 
 	private void Awake()
 	{
@@ -31,7 +35,7 @@ public class FluidContainer : MonoBehaviour
 		fluidMeshRenderer = GetComponentInChildren<MeshRenderer>();
 	}
 
-	private void OnEnable()
+	private void Reset()
 	{
 		Awake();
 	}
@@ -39,6 +43,10 @@ public class FluidContainer : MonoBehaviour
 	// Update is called once per frame
 	void Update()
 	{
+		width = UnitConverter.MetricToUnity(widthMeters);
+		height = UnitConverter.MetricToUnity(heightMeters);
+		thickness = UnitConverter.MetricToUnity(thicknessMeters);
+
 		//container
 		lineRenderer.SetPosition(0, new Vector2(-(width + thickness), height + thickness));
 		lineRenderer.SetPosition(1, new Vector2(-(width + thickness), -(height + thickness)));
@@ -47,50 +55,137 @@ public class FluidContainer : MonoBehaviour
 		lineRenderer.startWidth = thickness;
 		lineRenderer.endWidth = thickness;
 		capacity = UnitConverter.MetricToLitre(UnitConverter.UnityToMetric(width * height));
+		transform.rotation = Quaternion.Euler(0, 0, -rotation);
 
 		if (litres >= capacity)
 		{
 			litres = capacity;
 		}
 
+		if (Mathf.Abs(rotation) >= 90f)
+		{
+			litres = 0f;
+			fluidMeshRenderer.enabled = false;
+			return;
+		}
+		else
+		{
+			fluidMeshRenderer.enabled = true;
+		}
 
-		float neededHeight = UnitConverter.MetricToUnity(UnitConverter.LitreToMetric(litres) / width);
+		float neededHeight = UnitConverter.MetricToUnity(UnitConverter.LitreToMetric(litres) / widthMeters);
 		//text.text = neededHeight.ToString();
 
-		float heightA = Mathf.Tan(rotation * Mathf.Deg2Rad) * (width / 2f);
-		Debug.Log("heightA=" + heightA);
-		float heightB = Mathf.Tan(-rotation * Mathf.Deg2Rad) * (width / 2f);
+		float heightA = UnitConverter.MetricToUnity(Mathf.Tan(rotation * Mathf.Deg2Rad) * (widthMeters / 2f));
+		float heightB = UnitConverter.MetricToUnity(Mathf.Tan(-rotation * Mathf.Deg2Rad) * (widthMeters / 2f));
+		//Debug.Log("heightA=" + heightA);
 
 		List<Vector3> vertices = new()
 		{
-			new Vector2(-width, neededHeight*2 - heightA*2),
-			new Vector2(-width, 0),
-			new Vector2(width, 0),
-			new Vector2(width, neededHeight*2 - heightB*2)
+			new Vector2(-width, neededHeight*2 - heightA*2),	//A
+			new Vector2(-width, 0),								//B
+			new Vector2(width, 0),								//C
+			new Vector2(width, neededHeight*2 - heightB*2)		//D
 		};
-		if (heightA > neededHeight) //point A out of lower bounds
-		{
-			vertices.RemoveAt(1);
-			vertices[0] = new Vector2(-Mathf.Tan(Mathf.Abs(90f - rotation) * Mathf.Deg2Rad) * neededHeight*2, 0);
-		}
-		if (heightB > neededHeight)
-		{
-			vertices.RemoveAt(2);
-			vertices[2] = new Vector2(Mathf.Tan(-Mathf.Abs(90f - rotation) * Mathf.Deg2Rad) * neededHeight * 2, 0);
-		}
-		fluidMeshFilter.sharedMesh = GenerateFluidMesh(vertices.ToArray());
 
-		float a = vertices[0].y/2f;
-		float b = (vertices.Last().x + 1f)/2f;
-		float c = Mathf.Sqrt(a*a + b*b);
-		Debug.Log($"a={a}; b={b}; c={c}");
-		Debug.Log("Area: " + (a * b / 2f));
 
-		text.text = UnitConverter.MetricToLitre(UnitConverter.UnityToMetric(fluidMeshFilter.sharedMesh.CalculateSurfaceArea()/4f)).ToString("0.##") + " l"; //current fluid area
+		int triangle = 0;
+
+		//calculate triangle of point A (when point D doesn't reach lower right corner of container) for reference
+		Vector2 C1 = new(Mathf.Tan(-Mathf.Abs(90f - rotation) * Mathf.Deg2Rad) * neededHeight * 2, 0);
+		float alpha1 = GetVectorInternalAngle(vertices[1], vertices[0], C1);	//B, A, C
+		float beta1 = GetVectorInternalAngle(vertices[1], C1, vertices[0]);		//B, C, A
+		float b1 = Mathf.Sqrt((2 * UnitConverter.LitreToMetric(litres) * Mathf.Sin(alpha1 * Mathf.Deg2Rad)) / Mathf.Sin(beta1 * Mathf.Deg2Rad));
+		float a1 = (2 * UnitConverter.LitreToMetric(litres)) / b1;
+		Vector2 A1 = (Vector2)vertices[1] + Vector2.up * UnitConverter.MetricToUnity(a1);
+		C1 = (Vector2)vertices[1] + Vector2.right * UnitConverter.MetricToUnity(b1);
+		if (rotation < 0f && transform.GetChild(0).TransformPoint(C1).y <= transform.TransformPoint(lineRenderer.GetPosition(2)).y && transform.GetChild(0).TransformPoint(A1).y > transform.TransformPoint(lineRenderer.GetPosition(1)).y)
+		{
+			Debug.Log("Triangle A should be used");
+			triangle = 1;
+		}
+
+		//calculate triangle of point D (when point A doesn't reach lower right corner of container) for reference
+		Vector2 B2 = new(-Mathf.Tan(Mathf.Abs(90f - rotation) * Mathf.Deg2Rad) * neededHeight * 2, 0);
+		float alpha2 = GetVectorInternalAngle(B2, vertices[3], vertices[2]);
+		float beta2 = GetVectorInternalAngle(vertices[2], B2, vertices[3]);
+		float b2 = Mathf.Sqrt(2 * UnitConverter.LitreToMetric(litres) * Mathf.Sin(alpha2 * Mathf.Deg2Rad) / Mathf.Sin(beta2 * Mathf.Deg2Rad));
+		float a2 = 2 * UnitConverter.LitreToMetric(litres) / b2;
+		B2 = (Vector2)vertices[2] + Vector2.left * UnitConverter.MetricToUnity(b2);
+		Vector2 A2 = (Vector2)vertices[2] + Vector2.up * UnitConverter.MetricToUnity(a2);
+		if (rotation > 0f && transform.GetChild(0).TransformPoint(B2).y <= transform.TransformPoint(lineRenderer.GetPosition(1)).y && transform.GetChild(0).TransformPoint(A2).y > transform.TransformPoint(lineRenderer.GetPosition(2)).y)
+		{
+			Debug.Log("Triangle B should be used");
+			triangle = 2;
+		}
+
+
+
+		//if (heightA > neededHeight) //point A out of lower bounds
+		//{
+		//	vertices.RemoveAt(1);
+		//	vertices[0] = new Vector2(-Mathf.Tan(Mathf.Abs(90f - rotation) * Mathf.Deg2Rad) * neededHeight*2, 0);
+		//}
+		//if (heightB > neededHeight)
+		//{
+		//	vertices.RemoveAt(2);
+		//	vertices[2] = new Vector2(Mathf.Tan(-Mathf.Abs(90f - rotation) * Mathf.Deg2Rad) * neededHeight * 2, 0);
+		//}
 
 		fluidMeshRenderer.transform.localPosition = new Vector2(0, -height);
-		transform.rotation = Quaternion.Euler(0, 0, -rotation);
-			
+		
+
+		float alpha = GetVectorInternalAngle(vertices[1], vertices[0], vertices.Last());
+		float beta = GetVectorInternalAngle(vertices[1], vertices.Last(), vertices[0]);
+		alphaText.text = "α=" + alpha.ToString("0.#") + '°';
+		betaText.text = "β=" + beta.ToString("0.#") + '°';
+
+		//new values
+		float b = Mathf.Sqrt((2 * UnitConverter.LitreToMetric(litres) * Mathf.Sin(alpha * Mathf.Deg2Rad)) / Mathf.Sin(beta * Mathf.Deg2Rad));
+		float a = (2 * UnitConverter.LitreToMetric(litres)) / b;
+		Vector2 newA = Vector2.up * UnitConverter.MetricToUnity(a);
+		Vector2 newC = Vector2.right * UnitConverter.MetricToUnity(b);
+		//Debug.Log($"a={UnitConverter.MetricToUnity(a)}; b={UnitConverter.MetricToUnity(b)}");
+		//Debug.Log($"A={newA}; C={newC}");
+		float area = a * b / 2f;
+		text.text = UnitConverter.MetricToLitre(area).ToString("0.##") + " l";
+
+		//vertices[0] = (Vector2)vertices[1] + newA;
+		//vertices[2] = (Vector2)vertices[1] + newC;
+		//if (vertices.Count == 4) vertices.RemoveAt(1);
+
+		switch (triangle)
+		{
+			case 0:
+				Debug.Log("Quad should be used");
+				vertices[0] = new Vector2(-width, neededHeight*2 - heightA*2);
+				vertices[3] = new Vector2(width, neededHeight*2 - heightB*2);
+				break;
+			case 1:
+				if (vertices.Count == 4) vertices.RemoveAt(2);
+				vertices[0] = (Vector2)vertices[1] + Vector2.up * UnitConverter.MetricToUnity(a1);
+				vertices[2] = (Vector2)vertices[1] + Vector2.right * UnitConverter.MetricToUnity(b2);
+				break;
+			case 2:
+				if (vertices.Count == 4) vertices.RemoveAt(1);
+				vertices[0] = (Vector2)vertices[1] + Vector2.left * UnitConverter.MetricToUnity(b2);
+				vertices[2] = (Vector2)vertices[1] + Vector2.up * UnitConverter.MetricToUnity(a2);
+				break;
+			default:
+				break;
+		}
+
+		
+		text.text = UnitConverter.MetricToLitre(a2 * b2 / 2f).ToString("0.##") + " l";
+
+		pA = vertices[0];
+		pC = vertices[2];
+
+		pA = B2;
+		pC = A2;
+
+		//generate and assign mesh
+		fluidMeshFilter.sharedMesh = GenerateFluidMesh(vertices.ToArray());
 
 		//text
 		if (capacity == 0 || thickness == 0)
@@ -100,7 +195,8 @@ public class FluidContainer : MonoBehaviour
 		else
 		{
 			//text.text = UnitConverter.FormatVolume(litres) + " / " + UnitConverter.FormatVolume(capacity);
-			text.rectTransform.position = new Vector2(transform.position.x, transform.position.y-(height / 2 + thickness) - .3f);
+			text.text = (fluidMeshFilter.sharedMesh.CalculateSurfaceArea()*10f).ToString("0.##");
+			text.rectTransform.position = new Vector2(transform.position.x, transform.position.y-(height / 2 + thickness) - .3f - .25f);
 			text.rectTransform.sizeDelta = new Vector2(width + thickness, .3f);
 			text.enabled = true;
 		}
@@ -153,6 +249,13 @@ public class FluidContainer : MonoBehaviour
 		Vector2 point = transform.GetChild(0).TransformPoint(fluidMeshFilter.sharedMesh.vertices[0]);
 		point = new(0, point.y);
 		Gizmos.DrawLine(point + new Vector2(-1, 0), point + new Vector2(1, 0));
+
+		Gizmos.color = Color.yellow;
+		Gizmos.DrawLine(transform.GetChild(0).TransformPoint(pA), transform.GetChild(0).TransformPoint(pC));
+	}
+	public static float GetVectorInternalAngle(Vector3 a, Vector3 b, Vector3 c)
+	{
+		return Vector3.Angle(a - b, c - b);
 	}
 }
 

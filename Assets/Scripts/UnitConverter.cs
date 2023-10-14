@@ -1,6 +1,6 @@
 public static class UnitConverter
 {
-	public const float lengthScale = .001f; // how many meters are in a Unity unit?
+	public const float lengthScale = .1f; // how many meters are in a Unity unit?
 
 	/// <returns>input value in meters</returns>
 	public static float UnityToMetric(float a)
