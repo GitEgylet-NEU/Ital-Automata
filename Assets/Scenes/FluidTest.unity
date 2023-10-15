@@ -450,7 +450,7 @@ Transform:
   m_GameObject: {fileID: 1091581439}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -1, z: 0}
+  m_LocalPosition: {x: 0, y: -0.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -505,7 +505,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1091581439}
-  m_Mesh: {fileID: 1203596816}
+  m_Mesh: {fileID: 1254026798}
 --- !u!1 &1122590790
 GameObject:
   m_ObjectHideFlags: 0
@@ -540,7 +540,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -1.15}
+  m_AnchoredPosition: {x: 0, y: -0.825}
   m_SizeDelta: {x: 1.1, y: 0.3}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1122590792
@@ -563,7 +563,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 9,36
+  m_text: 2,5 dl / 1 l
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -640,7 +640,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1122590790}
   m_CullTransparentMesh: 1
---- !u!43 &1203596816
+--- !u!43 &1254026798
 Mesh:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -657,8 +657,8 @@ Mesh:
     firstVertex: 0
     vertexCount: 4
     localAABB:
-      m_Center: {x: 0, y: 0.28655213, z: 0}
-      m_Extent: {x: 1, y: 0.28655213, z: 0}
+      m_Center: {x: 0, y: 0.125, z: 0}
+      m_Extent: {x: 0.5, y: 0.125, z: 0}
   m_Shapes:
     vertices: []
     shapes: []
@@ -737,7 +737,7 @@ Mesh:
       format: 0
       dimension: 0
     m_DataSize: 128
-    _typelessdata: 000080bf79cdb93e000000000000000000000000000080bf000000000000803f000080bf00000000000000000000000000000000000080bf00000000000000000000803f00000000000000000000000000000000000080bf0000803f000000000000803ff6b6123f000000000000000000000000000080bf0000803f0000803f
+    _typelessdata: 000000bf0000803e000000000000000000000000000080bf000000000000803f000000bf00000000000000000000000000000000000080bf00000000000000000000003f00000000000000000000000000000000000080bf0000803f000000000000003f0000803e000000000000000000000000000080bf0000803f0000803f
   m_CompressedMesh:
     m_Vertices:
       m_NumItems: 0
@@ -791,8 +791,8 @@ Mesh:
       m_BitSize: 0
     m_UVInfo: 0
   m_LocalAABB:
-    m_Center: {x: 0, y: 0.28655213, z: 0}
-    m_Extent: {x: 1, y: 0.28655213, z: 0}
+    m_Center: {x: 0, y: 0.125, z: 0}
+    m_Extent: {x: 0.5, y: 0.125, z: 0}
   m_MeshUsageFlags: 0
   m_CookingOptions: 30
   m_BakedConvexCollisionMesh: 
@@ -814,8 +814,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1411884176}
-  - component: {fileID: 1411884177}
   - component: {fileID: 1411884175}
+  - component: {fileID: 1411884177}
   m_Layer: 0
   m_Name: FluidContainer
   m_TagString: Untagged
@@ -835,11 +835,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97b29a77f5bb5894b9a7841e2b63c078, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  widthMeters: 0.1
-  heightMeters: 0.1
-  thicknessMeters: 0.01
-  rotation: 6
-  litres: 2.34
+  width: 1
+  height: 1
+  thickness: 0.05
+  rotation: 0
+  liters: 0.25
   text: {fileID: 1122590792}
   alphaText: {fileID: 1552729845}
   betaText: {fileID: 1503312319}
@@ -851,9 +851,9 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1411884174}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: -0.05233596, w: 0.9986295}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 1091581440}
@@ -902,10 +902,10 @@ LineRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Positions:
-  - {x: -1.1, y: 1.1, z: 0}
-  - {x: -1.1, y: -1.1, z: 0}
-  - {x: 1.1, y: -1.1, z: 0}
-  - {x: 1.1, y: 1.1, z: 0}
+  - {x: -0.525, y: 0.525, z: 0}
+  - {x: -0.525, y: -0.525, z: 0}
+  - {x: 0.525, y: -0.525, z: 0}
+  - {x: 0.525, y: 0.525, z: 0}
   m_Parameters:
     serializedVersion: 3
     widthMultiplier: 1
@@ -914,7 +914,7 @@ LineRenderer:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0.099999994
+        value: 0.05
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -923,7 +923,7 @@ LineRenderer:
         outWeight: 0.33333334
       - serializedVersion: 3
         time: 1
-        value: 0.099999994
+        value: 0.05
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -1012,7 +1012,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u03B2=10\xB0"
+  m_text: "\u03B2=90\xB0"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1173,7 +1173,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u03B1=96\xB0"
+  m_text: "\u03B1=90\xB0"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

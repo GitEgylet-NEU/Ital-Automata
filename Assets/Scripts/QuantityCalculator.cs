@@ -81,7 +81,7 @@ public class QuantityCalculator : MonoBehaviour
 		if (!folytat) return;
 
 		float quantity = CalculateQuantity(atmero / 2f, sebesseg, ido);
-		outputText.text = UnitConverter.FormatVolume(quantity / 1000f);
+		outputText.text = Utils.FormatVolume(quantity / 1000f);
 	}
 
 	/// <summary>
