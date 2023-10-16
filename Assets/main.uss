@@ -3,6 +3,7 @@
 }
 
 .textmain {
+    color: rgb(255, 255, 255);
 }
 
 .slider {
@@ -41,20 +42,77 @@
 }
 
 .unity-base-text-field__input {
-    background-color: rgba(0, 0, 0, 0);
-    border-top-width: 0;
-    border-right-width: 0;
-    border-bottom-width: 0;
-    border-left-width: 0;
+    background-color: rgba(0, 177, 241, 0.1);
+    border-top-width: 2px;
+    border-right-width: 2px;
+    border-bottom-width: 2px;
+    border-left-width: 2px;
+    padding-left: 2px;
+    padding-right: 2px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    min-width: auto;
+    -unity-text-align: middle-center;
+    border-left-color: rgb(0, 177, 241);
+    border-right-color: rgb(0, 177, 241);
+    border-top-color: rgb(0, 177, 241);
+    border-bottom-color: rgb(0, 177, 241);
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
+    border-bottom-left-radius: 15px;
+    max-width: 400px;
+    -unity-background-image-tint-color: rgba(255, 0, 0, 0.75);
+    margin-top: 0;
+    margin-right: 0;
+    margin-bottom: 0;
+    margin-left: 0;
+}
+
+.unity-text-field {
+    margin-top: 0;
+    margin-right: 0;
+    margin-bottom: 0;
+    margin-left: 0;
+    width: 80%;
+}
+
+.unity-text-element {
+    color: rgb(255, 255, 255);
+}
+
+.unity-base-field {
+    font-size: 30px;
+    color: rgb(255, 255, 255);
+    align-items: stretch;
+    justify-content: flex-start;
+    -unity-text-align: middle-center;
+    text-overflow: ellipsis;
+    align-self: auto;
+}
+
+.unity-label {
+    justify-content: flex-start;
     padding-left: 0;
     padding-right: 0;
     padding-top: 0;
     padding-bottom: 0;
-    min-width: auto;
-    width: auto;
-    height: auto;
 }
 
-.unity-text-field {
-    width: auto;
+.nev {
+    font-size: 30px;
+    color: rgb(255, 255, 255);
+    -unity-text-align: middle-right;
+    white-space: normal;
+    width: 80%;
+    height: 60px;
+}
+
+.color {
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
+    border-bottom-left-radius: 20px;
+    -unity-text-align: middle-center;
+    font-size: 20px;
 }
