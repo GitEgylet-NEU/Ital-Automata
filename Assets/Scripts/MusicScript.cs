@@ -9,12 +9,12 @@ public class MusicScript : MonoBehaviour
     bool musicPlaying = false;
     bool musicPaused = false;
     AudioSource Music;
-    TMPro.TMP_Dropdown Select;
+    [SerializeField] TMPro.TMP_Dropdown Select; //a [SerializeField] tag-gel megjelenik a mező a Unity inspectorban, így bele lehet húzni dolgokat
 
     void Start()
     {
         Music = GetComponent<AudioSource>();
-        Select = GetComponent<TMPro.TMP_Dropdown>();
+        //Select = GetComponent<TMPro.TMP_Dropdown>(); //a MusicScript GameObject-jén nincsen Dropdown komponens, tehát külön meg kell mondani a scriptnek, hogy melyikre gondolsz (lásd feljebb)
         Music.clip = Resources.Load<AudioClip>("Audio/elevatormusic");
         Music.Stop();
     }
