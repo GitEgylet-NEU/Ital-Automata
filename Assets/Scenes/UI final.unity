@@ -209,7 +209,7 @@ Transform:
   m_GameObject: {fileID: 33518488}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -10}
+  m_LocalPosition: {x: 0, y: 0, z: -100}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -225,6 +225,7 @@ GameObject:
   m_Component:
   - component: {fileID: 302540200}
   - component: {fileID: 302540201}
+  - component: {fileID: 302540202}
   m_Layer: 5
   m_Name: main
   m_TagString: Untagged
@@ -267,6 +268,19 @@ MonoBehaviour:
   m_ParentUI: {fileID: 0}
   sourceAsset: {fileID: 9197481963319205126, guid: f189bd6f955d45f4788304d4f22be458, type: 3}
   m_SortingOrder: 0
+--- !u!114 &302540202
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 302540199}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c03d38378efe4c4d8a993a538585276, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  settingsmenu: {fileID: 1453096428}
 --- !u!1 &919279630
 GameObject:
   m_ObjectHideFlags: 0
@@ -454,7 +468,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1453096429
 RectTransform:
   m_ObjectHideFlags: 0
