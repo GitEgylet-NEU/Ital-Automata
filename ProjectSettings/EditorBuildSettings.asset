@@ -5,9 +5,12 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/SampleScene.unity
     guid: 2cda990e2423bbf4892e6590ba056729
+  - enabled: 1
+    path: Assets/Scenes/FluidTest.unity
+    guid: 428a31749aae4754eb88a0c4a23d30d0
   m_configObjects:
     com.unity.adaptiveperformance.google.android.provider_settings: {fileID: 11400000, guid: ce03f0b55ad5da244bb8299b3f5bb7ee, type: 2}
     com.unity.adaptiveperformance.loader_settings: {fileID: 11400000, guid: a2d126bf13c95e74383b8a4221ef8745, type: 2}

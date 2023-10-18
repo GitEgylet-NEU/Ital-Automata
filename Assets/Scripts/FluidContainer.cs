@@ -48,7 +48,7 @@ public class FluidContainer : MonoBehaviour
 		Vector3[] containerPos = new Vector3[lineRenderer.positionCount];
 		lineRenderer.GetPositions(containerPos);
 
-		transform.rotation = Quaternion.Euler(0, 0, -rotation);
+		//transform.rotation = Quaternion.Euler(0, 0, -rotation);
 		fluidMeshRenderer.transform.localPosition = new Vector2(0, -height / 2);
 		if (Mathf.Abs(rotation) >= 90f) liters = 0f;
 
@@ -72,8 +72,8 @@ public class FluidContainer : MonoBehaviour
 		else fluidMeshRenderer.enabled = true;
 
 		float neededHeight = liters / width;
-		float heightA = Mathf.Tan(rotation * Mathf.Deg2Rad) * (width / 2f);
-		float heightB = Mathf.Tan(-rotation * Mathf.Deg2Rad) * (width / 2f);
+		float heightA = Mathf.Tan(-rotation * Mathf.Deg2Rad) * (width / 2f);
+		float heightB = Mathf.Tan(rotation * Mathf.Deg2Rad) * (width / 2f);
 		List<Vector3> vertices = new()
 		{
 			new Vector2(-width/2, neededHeight - heightA),
