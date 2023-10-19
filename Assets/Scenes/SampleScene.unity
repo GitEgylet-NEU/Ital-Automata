@@ -1900,6 +1900,10 @@ MonoBehaviour:
       m_Image: {fileID: 0}
     - m_Text: The Cannery
       m_Image: {fileID: 0}
+    - m_Text: Gaslamp Funworks
+      m_Image: {fileID: 0}
+    - m_Text: Stringed Disco
+      m_Image: {fileID: 0}
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
