@@ -52,7 +52,7 @@ public class GyroscopeHandler : MonoBehaviour
 			gyroImage.color = Color.green;
 
 			actual.rotation = GyroToUnity(Input.gyro.attitude);
-			float angle = Vector3.SignedAngle(reference.up, actual.up, reference.forward);
+			float angle = Vector3.SignedAngle(reference.up, actual.up, -reference.forward);
 			gyroText.text = $"{actual.rotation.eulerAngles} (raw: {Input.gyro.attitude.eulerAngles})\n{angle.ToString(format)}";
 			rotation = Mathf.Lerp(rotation, angle, Time.deltaTime * 10f);
 		}

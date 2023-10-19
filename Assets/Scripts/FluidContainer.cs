@@ -72,8 +72,8 @@ public class FluidContainer : MonoBehaviour
 		else fluidMeshRenderer.enabled = true;
 
 		float neededHeight = liters / width;
-		float heightA = Mathf.Tan(-rotation * Mathf.Deg2Rad) * (width / 2f);
-		float heightB = Mathf.Tan(rotation * Mathf.Deg2Rad) * (width / 2f);
+		float heightA = Mathf.Tan(rotation * Mathf.Deg2Rad) * (width / 2f);
+		float heightB = Mathf.Tan(-rotation * Mathf.Deg2Rad) * (width / 2f);
 		List<Vector3> vertices = new()
 		{
 			new Vector2(-width/2, neededHeight - heightA),
@@ -90,7 +90,10 @@ public class FluidContainer : MonoBehaviour
 		float a1 = (2 * liters) / b1;
 		Vector2 A1 = (Vector2)vertices[1] + Vector2.up * a1;
 		C1 = (Vector2)vertices[1] + Vector2.right * b1;
-		if (rotation < 0f && transform.GetChild(0).TransformPoint(C1).y <= transform.TransformPoint(containerPos[2]).y && transform.GetChild(0).TransformPoint(A1).y > transform.TransformPoint(containerPos[1]).y)
+		if (rotation < 0f
+			&& transform.GetChild(0).TransformPoint(C1).y <= transform.TransformPoint(containerPos[2]).y + thickness/2f
+			&& transform.GetChild(0).TransformPoint(C1).x <= transform.TransformPoint(containerPos[2]).x - thickness/2f
+			&& transform.GetChild(0).TransformPoint(A1).y > transform.TransformPoint(containerPos[1]).y + thickness/2f)
 		{
 			//Debug.Log("Triangle A should be used");
 			if (A1.y > height)
@@ -121,7 +124,10 @@ public class FluidContainer : MonoBehaviour
 		float a2 = 2 * liters / b2;
 		B2 = (Vector2)vertices[2] + Vector2.up * a2;
 		Vector2 A2 = (Vector2)vertices[2] + Vector2.left * b2;
-		if (rotation > 0f && transform.GetChild(0).TransformPoint(B2).y <= transform.TransformPoint(containerPos[1]).y && transform.GetChild(0).TransformPoint(A2).y > transform.TransformPoint(containerPos[2]).y)
+		if (rotation > 0f
+			&& transform.GetChild(0).TransformPoint(A2).y <= transform.TransformPoint(containerPos[1]).y + thickness / 2f
+			&& transform.GetChild(0).TransformPoint(A2).x >= transform.TransformPoint(containerPos[1]).x + thickness / 2f
+			&& transform.GetChild(0).TransformPoint(B2).y > transform.TransformPoint(containerPos[2]).y + thickness / 2f)
 		{
 			//Debug.Log("Triangle B should be used");
 			if (B2.y > height)
