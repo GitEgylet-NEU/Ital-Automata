@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor.PackageManager;
+using UnityEditor.UI;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -10,6 +11,7 @@ public class UIcontroller : MonoBehaviour
     UIDocument maindoc;
     Button buttoncalc, buttonset;
     Label error;
+    TextField time, speed, size;
     void Start()
     {
         maindoc = GetComponent<UIDocument>();
@@ -22,7 +24,16 @@ public class UIcontroller : MonoBehaviour
 
         error = maindoc.rootVisualElement.Q("error") as Label;
         error.text = "Test";
-      
+
+        speed = maindoc.rootVisualElement.Q("sebesseg") as TextField;
+        Debug.Log(speed.value);
+
+        size = maindoc.rootVisualElement.Q("meret") as TextField;
+        Debug.Log(size.value);
+
+        time = maindoc.rootVisualElement.Q("ido") as TextField;
+        Debug.Log(time.value);
+
     }
 
     // Update is called once per frame
