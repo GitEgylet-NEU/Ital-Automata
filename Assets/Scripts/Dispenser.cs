@@ -13,6 +13,7 @@ public class Dispenser : MonoBehaviour
 
 	[SerializeField] FluidContainer fluidContainer;
 	Coroutine dispenserCoroutine;
+	AndroidJavaObject toast;
 
 	private void Awake()
 	{
@@ -44,6 +45,16 @@ public class Dispenser : MonoBehaviour
 
 	void DispenseButton()
 	{
+		if (GyroscopeHandler.instance.gyroEnabled)
+		{
+#if UNITY_ANDROID && !UNITY_EDITOR //run only on android devices                               
+			if (toast != null) toast.Call("cancel");
+			toast = Utils.ShowAndroidToastMessage("The gyroscope needs to be disabled!");
+#endif
+			StartCoroutine(Utils.FlashImage(GyroscopeHandler.instance.gyroButton.image, .3f, Color.red));
+			return;
+		}
+
 		float flow = QuantityCalculator.CalculateFlow(atmero / 2f, sebesseg) / 1000f; // liters/s
 		//Debug.Log($"flow: {flow} l/s");
 		float q = flow * ido;

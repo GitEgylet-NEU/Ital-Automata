@@ -1,4 +1,6 @@
+using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 public static class Utils
 {
@@ -19,6 +21,51 @@ public static class Utils
 	public static float GetVectorInternalAngle(Vector3 a, Vector3 b, Vector3 c)
 	{
 		return Vector3.Angle(a - b, c - b);
+	}
+
+#if UNITY_ANDROID && !UNITY_EDITOR
+	/// <param name="message">Message string to show in the toast.</param>
+	public static AndroidJavaObject ShowAndroidToastMessage(string message)
+	{
+		AndroidJavaClass unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+		AndroidJavaObject unityActivity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
+
+		if (unityActivity != null)
+		{
+			AndroidJavaClass toastClass = new AndroidJavaClass("android.widget.Toast");
+			AndroidJavaObject toastObject = null;
+			unityActivity.Call("runOnUiThread", new AndroidJavaRunnable(() =>
+			{
+				toastObject = toastClass.CallStatic<AndroidJavaObject>("makeText", unityActivity, message, 0);
+				toastObject.Call("show");
+			}));
+			return toastObject;
+		}
+		return null;
+	}
+#endif
+
+	public static IEnumerator FlashImage(Image image, float time, Color color)
+	{
+		float t = 0;
+		Color originalColor = image.color;
+
+		while (t <= time / 2f)
+		{
+			image.color = Color.Lerp(originalColor, color, t / (time / 2f));
+			t += Time.deltaTime;
+			yield return null;
+		}
+		image.color = color;
+		t = 0;
+		while (t <= time / 2f)
+		{
+			image.color = Color.Lerp(color, originalColor, t / (time / 2f));
+			t += Time.deltaTime;
+			yield return null;
+		}
+		
+		image.color = originalColor;
 	}
 }
 

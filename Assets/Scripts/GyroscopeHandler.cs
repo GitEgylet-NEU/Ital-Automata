@@ -6,10 +6,12 @@ using UnityEngine.UI;
 
 public class GyroscopeHandler : MonoBehaviour
 {
+	public static GyroscopeHandler instance;
+
 	[SerializeField] FluidContainer fluidContainer;
 	public bool gyroEnabled;
 	public float rotation;
-	Button gyroButton;
+	[HideInInspector] public Button gyroButton;
 	Image gyroImage;
 
 	[SerializeField] string format = "0.##";
@@ -18,6 +20,8 @@ public class GyroscopeHandler : MonoBehaviour
 
 	private void Awake()
 	{
+		instance = this;
+
 		gyroButton = GetComponent<Button>();
 		gyroImage = GetComponent<Image>();
 		gyroButton.onClick.AddListener(() =>
@@ -33,7 +37,6 @@ public class GyroscopeHandler : MonoBehaviour
 		{
 			Input.gyro.enabled = true;
 			gyroEnabled = true;
-			reference.rotation = GyroToUnity(Input.gyro.attitude);
 		}
 		else
 		{
@@ -45,6 +48,14 @@ public class GyroscopeHandler : MonoBehaviour
 		}
 	}
 
+	private void Start()
+	{
+		if (gyroEnabled)
+		{
+			reference.rotation = GyroToUnity(Input.gyro.attitude);
+		}
+	}
+
 	private void Update()
 	{
 		if (gyroEnabled)
@@ -52,6 +63,8 @@ public class GyroscopeHandler : MonoBehaviour
 			gyroImage.color = Color.green;
 
 			actual.rotation = GyroToUnity(Input.gyro.attitude);
+			Vector3 eulerRot = actual.localRotation.eulerAngles;
+			actual.localRotation = Quaternion.Euler(0, 0, eulerRot.z);
 			float angle = Vector3.SignedAngle(reference.up, actual.up, -reference.forward);
 			gyroText.text = $"{actual.rotation.eulerAngles} (raw: {Input.gyro.attitude.eulerAngles})\n{angle.ToString(format)}";
 			rotation = Mathf.Lerp(rotation, angle, Time.deltaTime * 10f);
