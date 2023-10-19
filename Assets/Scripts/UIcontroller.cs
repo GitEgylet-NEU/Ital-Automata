@@ -1,9 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEditor.PackageManager;
-using UnityEditor.ShaderGraph;
+using JetBrains.Annotations;
+using System.ComponentModel;
 using UnityEditor.UI;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UIElements;
 public class UIcontroller : MonoBehaviour
 {
@@ -13,8 +12,10 @@ public class UIcontroller : MonoBehaviour
     Label error;
     TextField time, speed, size;
     ScrollView colours;
+    public UnityEvent<int> errorstate;
     void Start()
     {
+        errorstate.AddListener(errorchange);
         maindoc = GetComponent<UIDocument>();
 
         //button
@@ -26,18 +27,13 @@ public class UIcontroller : MonoBehaviour
 
         //text
         error = maindoc.rootVisualElement.Q("error") as Label;
-        error.text = "Test";
 
         //inpufield
         speed = maindoc.rootVisualElement.Q("sebesseg") as TextField;
-        Debug.Log(speed.value);
 
         size = maindoc.rootVisualElement.Q("meret") as TextField;
-        Debug.Log(size.value);
 
         time = maindoc.rootVisualElement.Q("ido") as TextField;
-        Debug.Log(time.value);
-        time.RegisterCallback<InputEvent>(taimeset);
 
         //scrollview
         colours = maindoc.rootVisualElement.Q("szinek") as ScrollView;
@@ -45,14 +41,45 @@ public class UIcontroller : MonoBehaviour
         Color kolort = new Color(0f, 05f, 1f);
 
     }
+    public void errorchange(int state) 
+    {
+        switch (state)
+        {
+            case 0:
+                error.text = "jó";
+                error.visible = false;
+                break;
 
+                case 1:
+                error.visible = true;
+                error.text = "nem megfelelõ bemenet, kérlek csak számokat használj";
+                break;
+            case 2:
+                error.visible = true;
+                error.text = "túl nagy a szám hogy leszimuláljuk";
+                break;
+        }
+    }
     public void taimeset(InputEvent evt) 
     {
         Debug.Log(time.value);
     }
     public void calc(ClickEvent evt)
     {
+        try
+        {
+           int timeint = int.Parse(time.value);
+            int speedint = int.Parse(speed.value);
+            int sizeint = int.Parse(size.value);
+        }
+        catch (System.Exception)
+        {
+            errorstate.Invoke(1);
+            throw;
+        }
+        errorstate.Invoke(0);
         Debug.Log("Calculate");
+        //call simulation func
         buttoncalc.style.backgroundColor = Color.red;
     }
 
