@@ -24,7 +24,6 @@ public static class Utils
 	}
 
 #if UNITY_ANDROID && !UNITY_EDITOR
-	/// <param name="message">Message string to show in the toast.</param>
 	public static AndroidJavaObject ShowAndroidToastMessage(string message)
 	{
 		AndroidJavaClass unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
@@ -71,6 +70,8 @@ public static class Utils
 
 public static class MeshExtensions
 {
+	//source: https://gamedev.stackexchange.com/a/165647 (CC BY-SA 4.0)
+	//not used in project, only for debugging during development
 	public static float CalculateSurfaceArea(this Mesh mesh)
 	{
 		var triangles = mesh.triangles;

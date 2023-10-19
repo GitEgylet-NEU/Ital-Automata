@@ -1,10 +1,10 @@
 using UnityEngine;
 
-public static class QuantityCalculator
+public static class Calculator
 {
 	/// <summary>
-	/// radius and velocity must be in the same measurement! (cm, cm/s)
-	/// I=v*A (t√©rfogat √°raml√°sa = √°raml√°si sebess√©g * mer≈ëleges keresztmetszet)
+	/// radius and velocity must be in the same measurement (cm, cm/s)!
+	/// Calculated from: I=v*A (tÈrfogat ·raml·sa = ·raml·si sebessÈg * merıleges keresztmetszet)
 	/// </summary>
 	public static float CalculateFlow(float radius, float velocity)
 	{

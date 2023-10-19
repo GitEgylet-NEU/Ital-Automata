@@ -80,9 +80,7 @@ public class QuantityCalculatorTest : MonoBehaviour
 		outputText.text = string.Empty;
 		if (!folytat) return;
 
-		float quantity = QuantityCalculator.CalculateQuantity(atmero / 2f, sebesseg, ido);
+		float quantity = Calculator.CalculateQuantity(atmero / 2f, sebesseg, ido);
 		outputText.text = Utils.FormatVolume(quantity / 1000f);
 	}
-
-	
 }

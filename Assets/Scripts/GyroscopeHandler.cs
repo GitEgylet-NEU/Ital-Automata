@@ -1,7 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class GyroscopeHandler : MonoBehaviour
@@ -12,40 +10,45 @@ public class GyroscopeHandler : MonoBehaviour
 	public bool gyroEnabled;
 	public float rotation;
 	[HideInInspector] public Button gyroButton;
-	Image gyroImage;
 
-	[SerializeField] string format = "0.##";
 	[SerializeField] Transform reference, actual;
-	[SerializeField] TextMeshProUGUI gyroText;
+
+	public UnityEvent<bool> gyroscopeButtonEnabled = new();
+	public UnityEvent<Color> gyroscopeButtonColorChanged = new();
+	/// <summary>Calls when the gyroscope button should be flashed.
+	/// Listeners should run <see cref="Utils.FlashImage(Image, float, Color)"/> and pass the gyroscope button's image.</summary>
+	public UnityEvent gyroscopeButtonFlashed = new();
 
 	private void Awake()
 	{
 		instance = this;
 
 		gyroButton = GetComponent<Button>();
-		gyroImage = GetComponent<Image>();
-		gyroButton.onClick.AddListener(() =>
-		{
-			gyroEnabled = !gyroEnabled;
-			if (gyroEnabled)
-			{
-				reference.rotation = GyroToUnity(Input.gyro.attitude);
-			}
-		});
 
 		if (SystemInfo.supportsGyroscope)
 		{
 			Input.gyro.enabled = true;
 			gyroEnabled = true;
+
+			gyroscopeButtonEnabled.Invoke(true);
 		}
 		else
 		{
 			Debug.LogWarning("No gyroscope could be found on the device. Disabling gyroscope functions.");
+#if UNITY_ANDROID && !UNITY_EDITOR
+			Utils.ShowAndroidToastMessage("Run the app on a device that supports a gyroscope to fully enjoy the experience!");
+#endif
 			gyroEnabled = false;
 			gyroButton.interactable = false;
-			gyroImage.color = Color.yellow;
+			gyroButton.image.color = Color.yellow;
+
+			gyroscopeButtonEnabled.Invoke(false);
+			gyroscopeButtonColorChanged.Invoke(Color.yellow);
+
 			enabled = false;
 		}
+		
+		//TODO: listen to button press
 	}
 
 	private void Start()
@@ -60,30 +63,35 @@ public class GyroscopeHandler : MonoBehaviour
 	{
 		if (gyroEnabled)
 		{
-			gyroImage.color = Color.green;
+			gyroButton.image.color = Color.green;
+			gyroscopeButtonColorChanged.Invoke(Color.green);
 
 			actual.rotation = GyroToUnity(Input.gyro.attitude);
 			Vector3 eulerRot = actual.localRotation.eulerAngles;
 			actual.localRotation = Quaternion.Euler(0, 0, eulerRot.z);
 			float angle = Vector3.SignedAngle(reference.up, actual.up, -reference.forward);
-			gyroText.text = $"{actual.rotation.eulerAngles} (raw: {Input.gyro.attitude.eulerAngles})\n{angle.ToString(format)}";
-			rotation = Mathf.Lerp(rotation, angle, Time.deltaTime * 10f);
+			rotation = Mathf.Lerp(rotation, angle, Time.deltaTime * 10f); //smoothing
 		}
 		else
 		{
-			gyroImage.color = Color.red;
+			gyroButton.image.color = Color.red;
+			gyroscopeButtonColorChanged.Invoke(Color.red);
 			rotation = 0f;
 		}
 		fluidContainer.rotation = rotation;
 	}
 
-	//private void OnDrawGizmos()
-	//{
-	//	Gizmos.color = Color.magenta;
-	//	Gizmos.DrawLine(actual.position, actual.position + 5f*actual.forward);
-	//}
+	/// <summary>Call when the gyroscope button has been pressed.</summary>
+	public void GyroscopeButton()
+	{
+		gyroEnabled = !gyroEnabled;
+		if (gyroEnabled)
+		{
+			reference.rotation = GyroToUnity(Input.gyro.attitude);
+		}
+	}
 
-	//https://docs.unity3d.com/ScriptReference/Gyroscope.html
+	//source: https://docs.unity3d.com/ScriptReference/Gyroscope.html
 	private Quaternion GyroToUnity(Quaternion q)
 	{
 		return new Quaternion(q.x, q.y, -q.z, -q.w);

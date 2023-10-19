@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using TMPro;
 using UnityEngine;
 
-[ExecuteAlways]
 public class FluidContainer : MonoBehaviour
 {
 	// 1u = 1dm
@@ -15,7 +13,8 @@ public class FluidContainer : MonoBehaviour
 
 	[Min(0)] public float liters = 0f;
 
-	[SerializeField] TextMeshProUGUI text, alphaText, betaText;
+	bool shouldSimulate = true;
+
 	LineRenderer lineRenderer;
 	MeshFilter fluidMeshFilter;
 	MeshRenderer fluidMeshRenderer;
@@ -29,15 +28,16 @@ public class FluidContainer : MonoBehaviour
 
 		fluidMeshFilter = GetComponentInChildren<MeshFilter>();
 		fluidMeshRenderer = GetComponentInChildren<MeshRenderer>();
-	}
 
-	private void Reset()
-	{
-		Awake();
+		//TODO: listen to errors from UI -> shouldSimulate
 	}
 
 	void Update()
 	{
+		lineRenderer.enabled = shouldSimulate;
+		fluidMeshRenderer.enabled = shouldSimulate;
+		if (!shouldSimulate) return;
+
 		//container
 		lineRenderer.SetPosition(0, new Vector2(-(width / 2f + thickness / 2f), height / 2f + thickness / 2f));
 		lineRenderer.SetPosition(1, new Vector2(-(width / 2f + thickness / 2f), -(height / 2f + thickness / 2f)));
@@ -48,20 +48,8 @@ public class FluidContainer : MonoBehaviour
 		Vector3[] containerPos = new Vector3[lineRenderer.positionCount];
 		lineRenderer.GetPositions(containerPos);
 
-		//transform.rotation = Quaternion.Euler(0, 0, -rotation);
 		fluidMeshRenderer.transform.localPosition = new Vector2(0, -height / 2);
 		if (Mathf.Abs(rotation) >= 90f) liters = 0f;
-
-		//text
-		if (width == 0f || height == 0f || thickness == 0f) text.enabled = false;
-		else
-		{
-			text.text = Utils.FormatVolume(liters);
-			float lowestY = containerPos.Select(x => transform.TransformPoint(x).y).Min();
-			text.rectTransform.position = new Vector2(transform.position.x, lowestY - .3f);
-			text.rectTransform.sizeDelta = new Vector2(width + thickness * 2, .3f);
-			text.enabled = true;
-		}
 
 		if (liters == 0f)
 		{
@@ -84,16 +72,16 @@ public class FluidContainer : MonoBehaviour
 
 		//triangle A
 		Vector2 C1 = new(Mathf.Tan(-Mathf.Abs(90f - rotation) * Mathf.Deg2Rad) * neededHeight, 0);
-		float alpha1 = Utils.GetVectorInternalAngle(vertices[1], vertices[0], C1); //B, A, C
-		float beta1 = Utils.GetVectorInternalAngle(vertices[1], C1, vertices[0]); //B, C, A
+		float alpha1 = Utils.GetVectorInternalAngle(vertices[1], vertices[0], C1);
+		float beta1 = Utils.GetVectorInternalAngle(vertices[1], C1, vertices[0]);
 		float b1 = Mathf.Sqrt((2 * liters * Mathf.Sin(alpha1 * Mathf.Deg2Rad)) / Mathf.Sin(beta1 * Mathf.Deg2Rad));
 		float a1 = (2 * liters) / b1;
 		Vector2 A1 = (Vector2)vertices[1] + Vector2.up * a1;
 		C1 = (Vector2)vertices[1] + Vector2.right * b1;
 		if (rotation < 0f
-			&& transform.GetChild(0).TransformPoint(C1).y <= transform.TransformPoint(containerPos[2]).y + thickness/2f
-			&& transform.GetChild(0).TransformPoint(C1).x <= transform.TransformPoint(containerPos[2]).x - thickness/2f
-			&& transform.GetChild(0).TransformPoint(A1).y > transform.TransformPoint(containerPos[1]).y + thickness/2f)
+			&& transform.GetChild(0).TransformPoint(C1).y <= transform.TransformPoint(containerPos[2]).y + thickness / 2f
+			&& transform.GetChild(0).TransformPoint(C1).x <= transform.TransformPoint(containerPos[2]).x - thickness / 2f
+			&& transform.GetChild(0).TransformPoint(A1).y > transform.TransformPoint(containerPos[1]).y + thickness / 2f)
 		{
 			//Debug.Log("Triangle A should be used");
 			if (A1.y > height)
@@ -103,15 +91,12 @@ public class FluidContainer : MonoBehaviour
 				a1 = A1.y;
 				b1 = Mathf.Tan(alpha1 * Mathf.Deg2Rad) * a1;
 				liters = b1 * a1 / 2f;
-				text.text = Utils.FormatVolume(liters);
 				neededHeight = liters / width;
 			}
 
 			if (vertices.Count == 4) vertices.RemoveAt(2);
 			vertices[0] = (Vector2)vertices[1] + Vector2.up * a1;
 			vertices[2] = (Vector2)vertices[1] + Vector2.right * b1;
-			alphaText.text = "α=" + alpha1.ToString("0.#") + '°';
-			betaText.text = "β=" + beta1.ToString("0.#") + '°';
 
 			goto rendering;
 		}
@@ -137,20 +122,16 @@ public class FluidContainer : MonoBehaviour
 				a2 = B2.y;
 				b2 = Mathf.Tan(alpha2 * Mathf.Deg2Rad) * a2;
 				liters = b2 * a2 / 2f;
-				text.text = Utils.FormatVolume(liters);
 				neededHeight = liters / width;
 			}
 
 			if (vertices.Count == 4) vertices.RemoveAt(1);
 			vertices[0] = (Vector2)vertices[1] + Vector2.left * b2;
 			vertices[2] = (Vector2)vertices[1] + Vector2.up * a2;
-			alphaText.text = "α=" + alpha2.ToString("0.#") + '°';
-			betaText.text = "β=" + beta2.ToString("0.#") + '°';
 
 			goto rendering;
 		}
 
-		//quad
 		if (vertices.Count == 4)
 		{
 			//Debug.Log("Quad should be used");
@@ -165,11 +146,8 @@ public class FluidContainer : MonoBehaviour
 				neededHeight = Mathf.Max(neededHeight - diffB, 0f);
 			}
 			liters = neededHeight * width;
-			text.text = Utils.FormatVolume(liters);
 			vertices[0] = new Vector2(-width / 2, neededHeight - heightA);
 			vertices[3] = new Vector2(width / 2, neededHeight - heightB);
-			alphaText.text = "α=" + Utils.GetVectorInternalAngle(vertices[1], vertices[0], vertices[3]).ToString("0.#") + '°';
-			betaText.text = "β=" + Utils.GetVectorInternalAngle(vertices[1], vertices[0], vertices[3]).ToString("0.#") + '°';
 
 			goto rendering;
 		}
@@ -181,6 +159,7 @@ public class FluidContainer : MonoBehaviour
 
 	Mesh GenerateFluidMesh(Vector3[] vertices)
 	{
+		if (vertices.Length < 3) return null;
 		Mesh mesh = new();
 		mesh.name = "Fluid";
 		int[] triangles;
@@ -219,12 +198,5 @@ public class FluidContainer : MonoBehaviour
 		mesh.RecalculateBounds();
 		mesh.RecalculateNormals();
 		return mesh;
-	}
-	private void OnDrawGizmos()
-	{
-		if (liters <= 0f) return;
-		Gizmos.color = Color.red;
-		float y = transform.GetChild(0).TransformPoint(fluidMeshFilter.sharedMesh.vertices[0]).y;
-		Gizmos.DrawLine(new Vector2(-1, y), new Vector2(1, y));
 	}
 }
