@@ -1,11 +1,11 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.UI;
 
 public class Dispenser : MonoBehaviour
 {
 	float atmero, sebesseg, ido; //cm, cm, s - kimenetben dm-nek kell lennie (1u=1dm)
+	Color ital = Utils.water;
 	Transform waterFlow, spawnPoint;
 
 	[SerializeField] FluidContainer fluidContainer;
@@ -17,7 +17,7 @@ public class Dispenser : MonoBehaviour
 	private void Awake()
 	{
 		//TODO: call on change of átmérõ: transform.localScale = new Vector2((atmero + 1f) / 10f, 1);
-		//TODO: listen to parameters
+		//TODO: listen to parameters (floats, Color)
 		spawnPoint = transform.GetChild(0);
 		waterFlow = spawnPoint.GetChild(0);
 		waterFlow.gameObject.SetActive(false);
@@ -45,22 +45,26 @@ public class Dispenser : MonoBehaviour
 		waterFlow.gameObject.SetActive(true);
 
 		StopCoroutine(dispenserCoroutine);
-		dispenserCoroutine = StartCoroutine(DispenseAmount(flow, ido));
+		dispenserCoroutine = StartCoroutine(DispenseAmount(flow, ido, ital));
 
 		dispenseButtonCanBeEnabled.Invoke(false);
 	}
 
-	IEnumerator DispenseAmount(float flow, float time)
+	public IEnumerator DispenseAmount(float flow, float time, Color color)
 	{
 		float t = 0;
 		float original = fluidContainer.liters;
 		while (t <= time)
 		{
-			fluidContainer.liters += flow * Time.deltaTime;
+			fluidContainer.AddFluid(flow * Time.deltaTime, color);
+			//fluidContainer.liters += flow * Time.deltaTime;
 			t += Time.deltaTime;
 			yield return null;
 		}
-		fluidContainer.liters = original + time * flow;
+		float diff = (original + time * flow) - fluidContainer.liters;
+		if (diff > 0f) fluidContainer.AddFluid(diff, color);
+		else fluidContainer.liters = original + time*flow;
+		//fluidContainer.liters = original + time * flow;
 		waterFlow.gameObject.SetActive(false);
 		dispenserCoroutine = null;
 

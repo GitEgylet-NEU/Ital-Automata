@@ -2,6 +2,7 @@
 using System.Linq;
 using UnityEngine;
 
+[ExecuteAlways]
 public class FluidContainer : MonoBehaviour
 {
 	// 1u = 1dm
@@ -12,6 +13,7 @@ public class FluidContainer : MonoBehaviour
 	[Range(-180, 180)] public float rotation = 0f;
 
 	[Min(0)] public float liters = 0f;
+	public Color fluidColor = Utils.water;
 
 	bool shouldSimulate = true;
 
@@ -30,6 +32,29 @@ public class FluidContainer : MonoBehaviour
 		fluidMeshRenderer = GetComponentInChildren<MeshRenderer>();
 
 		//TODO: listen to errors from UI -> shouldSimulate
+	}
+	private void Reset()
+	{
+		Awake();
+	}
+
+	/// <param name="amount">Amount of fluid in liters</param>
+	public void AddFluid(float amount, Color color)
+	{
+		if (liters == 0f)
+		{
+			liters = amount;
+			fluidColor = color;
+			return;
+		}
+		//in theory, new color can be calculated by taking the weighted average of the two fluids' colors
+		float averageR = (liters * fluidColor.r + amount * color.r) / (liters + amount);
+		float averageG = (liters * fluidColor.g + amount * color.g) / (liters + amount);	
+		float averageB = (liters * fluidColor.b + amount * color.b) / (liters + amount);
+		float averageA = (liters * fluidColor.a + amount * color.a) / (liters + amount);
+		fluidColor = new Color(averageR, averageG, averageB, averageA);
+		//Debug.Log($"{liters} * {fluidColor.r} & {amount} * {color.r} | {averageR}"); //debug
+		liters += amount;
 	}
 
 	void Update()
@@ -51,6 +76,15 @@ public class FluidContainer : MonoBehaviour
 		fluidMeshRenderer.transform.localPosition = new Vector2(0, -height / 2);
 		if (Mathf.Abs(rotation) >= 90f) liters = 0f;
 
+#if UNITY_EDITOR
+		if (Input.GetKeyDown(KeyCode.R))
+		{
+			StartCoroutine(FindObjectOfType<Dispenser>().DispenseAmount(.2f, 1f, Color.red));
+		}
+		else if (Input.GetKeyDown(KeyCode.G)) AddFluid(.05f, Color.green);
+		else if (Input.GetKeyDown(KeyCode.B)) AddFluid(.05f, Color.blue);
+#endif
+
 		if (liters == 0f)
 		{
 			fluidMeshRenderer.enabled = false;
@@ -58,6 +92,8 @@ public class FluidContainer : MonoBehaviour
 			return;
 		}
 		else fluidMeshRenderer.enabled = true;
+
+		fluidMeshRenderer.sharedMaterial.color = fluidColor;
 
 		float neededHeight = liters / width;
 		float heightA = Mathf.Tan(rotation * Mathf.Deg2Rad) * (width / 2f);

@@ -4,6 +4,7 @@ using UnityEngine.UI;
 
 public static class Utils
 {
+	public static Color water = new(.25f, .65f, 1f);
 	public static string FormatVolume(float litres)
 	{
 		float millilitres = litres * 1000;
