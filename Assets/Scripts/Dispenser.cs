@@ -1,6 +1,7 @@
 using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class Dispenser : MonoBehaviour
@@ -15,6 +16,10 @@ public class Dispenser : MonoBehaviour
 	Coroutine dispenserCoroutine;
 	AndroidJavaObject toast;
 
+	/// <summary>Calls when the state of the dispense button should be changed. (true = set as interactable)</summary>
+	public UnityEvent<bool> dispenseButtonChanged;
+	public UnityEvent dispensingStarted, dispensingFinished;
+
 	private void Awake()
 	{
 		atmeroInput.onEndEdit.AddListener((string v) =>
@@ -25,7 +30,7 @@ public class Dispenser : MonoBehaviour
 		sebessegInput.onEndEdit.AddListener((string v) => sebesseg = float.Parse(v));
 		idoInput.onEndEdit.AddListener((string v) => ido = float.Parse(v));
 		quantityText.text = string.Empty;
-		dispenseButton.onClick.AddListener(DispenseButton);
+		//dispenseButton.onClick.AddListener(DispenseButton);
 		spawnPoint = transform.GetChild(0);
 		waterFlow = spawnPoint.GetChild(0);
 		waterFlow.gameObject.SetActive(false);
@@ -36,14 +41,19 @@ public class Dispenser : MonoBehaviour
 		if (string.IsNullOrEmpty(atmeroInput.text) || string.IsNullOrEmpty(sebessegInput.text) || string.IsNullOrEmpty(idoInput.text) || dispenserCoroutine != null)
 		{
 			dispenseButton.interactable = false;
+			dispenseButtonChanged.Invoke(false);
 		}
 		else
 		{
 			dispenseButton.interactable = true;
+			dispenseButtonChanged.Invoke(true);
 		}
 	}
 
-	void DispenseButton()
+	/// <summary>
+	/// Call when the dispenser button has been pressed.
+	/// </summary>
+	public void DispenseButton()
 	{
 		if (GyroscopeHandler.instance.gyroEnabled)
 		{
@@ -56,13 +66,13 @@ public class Dispenser : MonoBehaviour
 		}
 
 		float flow = QuantityCalculator.CalculateFlow(atmero / 2f, sebesseg) / 1000f; // liters/s
-		//Debug.Log($"flow: {flow} l/s");
 		float q = flow * ido;
 		quantityText.text = $"{Utils.FormatVolume(q)}\nflow: {Utils.FormatVolume(flow)}/s";
-		waterFlow.localScale = new Vector2(atmero / 10f, spawnPoint.transform.position.y - (fluidContainer.transform.position.y - fluidContainer.height/2f));
+		waterFlow.localScale = new Vector2(atmero / 10f, spawnPoint.transform.position.y - (fluidContainer.transform.position.y - fluidContainer.height / 2f));
 		waterFlow.localPosition = new Vector2(0, -waterFlow.localScale.y / 2f);
 		waterFlow.gameObject.SetActive(true);
 		dispenserCoroutine = StartCoroutine(DispenseAmount(flow, ido));
+		dispensingStarted.Invoke();
 	}
 
 	IEnumerator DispenseAmount(float flow, float time)
@@ -79,5 +89,6 @@ public class Dispenser : MonoBehaviour
 		quantityText.text = string.Empty;
 		waterFlow.gameObject.SetActive(false);
 		dispenserCoroutine = null;
+		dispensingFinished.Invoke();
 	}
 }
