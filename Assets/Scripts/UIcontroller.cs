@@ -8,14 +8,24 @@ public class UIcontroller : MonoBehaviour
 {
     public GameObject settingsmenu;
     UIDocument maindoc;
+
+    //ui elements
     Button buttoncalc, buttonset;
-    Label error;
+    Label error, liters;
     TextField time, speed, size;
     ScrollView colours;
+    VisualElement renderWindow;
+
+    //events
     public UnityEvent<int> errorstate;
+    public UnityEvent<float> speedevent, timeevent, sizeevent;
     void Start()
     {
         errorstate.AddListener(errorchange);
+
+        //debug
+        speedevent.AddListener(speedchange);
+
         maindoc = GetComponent<UIDocument>();
 
         //button
@@ -26,6 +36,7 @@ public class UIcontroller : MonoBehaviour
         buttonset.RegisterCallback<ClickEvent>(set);
 
         //text
+        liters = maindoc.rootVisualElement.Q("litersUSS") as Label;
         error = maindoc.rootVisualElement.Q("error") as Label;
 
         //inpufield
@@ -40,22 +51,38 @@ public class UIcontroller : MonoBehaviour
         colours.RegisterCallback<ClickEvent>(kolor);
         Color kolort = new Color(0f, 05f, 1f);
 
+        //renderwindow
+        renderWindow = maindoc.rootVisualElement.Q("rendererUSS") as VisualElement;
+
     }
+    private void Update()
+    {
+        //hunornak ha nincs adat
+        buttoncalc.SetEnabled(false);
+        //uncomment merge után
+        //liters.text = Utils.FormatValue(fluidContainer.liters);
+    }
+
+    //error box state change based on event int
     public void errorchange(int state) 
     {
         switch (state)
         {
             case 0:
+                error.style.display = new(StyleKeyword.Null);
                 error.text = "jó";
-                error.visible = false;
+                renderWindow.style.display = StyleKeyword.Initial;
+
                 break;
 
                 case 1:
-                error.visible = true;
+                renderWindow.style.display = StyleKeyword.Null;
+                error.style.display = new(StyleKeyword.Initial);
                 error.text = "nem megfelelõ bemenet, kérlek csak számokat használj";
                 break;
             case 2:
-                error.visible = true;
+                renderWindow.style.display = new(StyleKeyword.Null);
+                error.style.display = new(StyleKeyword.Initial);
                 error.text = "túl nagy a szám hogy leszimuláljuk";
                 break;
         }
@@ -64,13 +91,16 @@ public class UIcontroller : MonoBehaviour
     {
         Debug.Log(time.value);
     }
+
+    //calc clicked, try to invoke inputfield data
     public void calc(ClickEvent evt)
     {
+        Debug.Log("calc");
         try
         {
-           int timeint = int.Parse(time.value);
-            int speedint = int.Parse(speed.value);
-            int sizeint = int.Parse(size.value);
+            timeevent.Invoke(float.Parse(time.value));
+            speedevent.Invoke(float.Parse(speed.value));
+            sizeevent.Invoke(float.Parse(size.value));
         }
         catch (System.Exception)
         {
@@ -83,6 +113,7 @@ public class UIcontroller : MonoBehaviour
         buttoncalc.style.backgroundColor = Color.red;
     }
 
+    //setting on or off
     public void set(ClickEvent evt)
     {
         Debug.Log("set");
@@ -93,6 +124,8 @@ public class UIcontroller : MonoBehaviour
         }
         else { settingsmenu.SetActive(false); Debug.Log("ki"); }
     }
+
+    //kolor test
     public void kolor(ClickEvent evt) 
     {
         //change scrollview children background color 
@@ -106,5 +139,11 @@ public class UIcontroller : MonoBehaviour
             var children = child as Label;
             children.text = a.ToString() + " " + b.ToString() + " " + c.ToString() + " " + d.ToString() + " ";
         }
+    }
+    //debug
+    public void speedchange(float state)
+    {
+        Debug.Log(state);  
+     
     }
 }
