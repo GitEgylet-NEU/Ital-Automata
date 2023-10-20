@@ -2,19 +2,19 @@
     <Style src="project://database/Assets/main.uss?fileID=7433441132597879392&amp;guid=1f3ec61d02f011647ae22f1ae1470424&amp;type=3#main" />
     <ui:VisualElement name="frame" class="fram" style="flex-grow: 1; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; background-color: rgb(58, 58, 58); padding-top: 10px; padding-right: 10px; padding-bottom: 10px; padding-left: 10px; opacity: 1;">
         <ui:VisualElement name="VisualElement" style="flex-direction: row; justify-content: space-between;">
-            <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true" name="rotate" style="align-items: auto; align-self: flex-start; background-image: url(&apos;project://database/Assets/Textures/screen_rotation.png?fileID=21300000&amp;guid=e67eabeb3f72e2e49b30ee5178d6bea8&amp;type=3#screen_rotation&apos;); -unity-background-scale-mode: scale-to-fit; background-color: rgba(188, 188, 188, 0); border-left-color: rgba(149, 149, 149, 0); border-right-color: rgba(149, 149, 149, 0); border-top-color: rgba(149, 149, 149, 0); border-bottom-color: rgba(149, 149, 149, 0); width: 50px; height: 50px;" />
+            <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true" name="gyroscope" style="align-items: auto; align-self: flex-start; background-image: url(&apos;project://database/Assets/Textures/screen_rotation.png?fileID=21300000&amp;guid=e67eabeb3f72e2e49b30ee5178d6bea8&amp;type=3#screen_rotation&apos;); -unity-background-scale-mode: scale-to-fit; background-color: rgba(188, 188, 188, 0); border-left-color: rgba(149, 149, 149, 0); border-right-color: rgba(149, 149, 149, 0); border-top-color: rgba(149, 149, 149, 0); border-bottom-color: rgba(149, 149, 149, 0); width: 50px; height: 50px;" />
             <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true" name="settings" style="align-items: auto; align-self: flex-start; background-image: url(&apos;project://database/Assets/Textures/settings.png?fileID=21300000&amp;guid=8ef6d1ccfb3aefb44852ac6a97106ece&amp;type=3#settings&apos;); background-color: rgba(188, 188, 188, 0); border-left-color: rgba(149, 149, 149, 0); border-right-color: rgba(149, 149, 149, 0); border-top-color: rgba(149, 149, 149, 0); border-bottom-color: rgba(149, 149, 149, 0); width: 50px; height: 50px; -unity-background-scale-mode: scale-to-fit;" />
         </ui:VisualElement>
-        <ui:VisualElement name="VisualElement" style="flex-direction: row;">
-            <ui:VisualElement name="VisualElement" style="flex-grow: 1; width: 50%; height: initial; justify-content: space-between; align-items: flex-end; min-width: 200px; padding-top: 8px; padding-bottom: 8px;">
-                <ui:Label tabindex="-1" text="cső átmérője" parse-escape-sequences="true" display-tooltip-when-elided="true" class="nev" style="flex-wrap: nowrap;" />
-                <ui:Label tabindex="-1" text="áramlás sebessége" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Label" class="nev" />
-                <ui:Label tabindex="-1" text="kitöltés ideje" parse-escape-sequences="true" display-tooltip-when-elided="true" class="nev" style="width: 90%;" />
+        <ui:VisualElement name="VisualElement" style="flex-direction: row; margin-top: 16px; margin-bottom: 16px; margin-left: 8px; margin-right: 8px;">
+            <ui:VisualElement name="VisualElement" style="flex-grow: 1; width: 60%; height: initial; justify-content: space-between; align-items: flex-end; min-width: 200px; padding-top: 8px; padding-bottom: 8px;">
+                <ui:Label tabindex="-1" text="cső átmérője (cm)" parse-escape-sequences="true" display-tooltip-when-elided="true" class="nev" style="flex-wrap: nowrap;" />
+                <ui:Label tabindex="-1" text="áramlás sebessége (cm/s)" parse-escape-sequences="true" display-tooltip-when-elided="true" class="nev" />
+                <ui:Label tabindex="-1" text="kitöltés ideje (s)" parse-escape-sequences="true" display-tooltip-when-elided="true" class="nev" />
             </ui:VisualElement>
-            <ui:VisualElement style="flex-grow: 1; height: auto; justify-content: space-between; width: 50%; padding-top: 19px; padding-bottom: 13px;">
-                <ui:TextField picking-mode="Ignore" value="cm" keyboard-type="NumberPad" name="meret" max-length="15" />
-                <ui:TextField picking-mode="Ignore" value="cm/s" keyboard-type="NumberPad" max-length="15" name="sebesseg" />
-                <ui:TextField picking-mode="Ignore" value="s" max-length="15" keyboard-type="NumberPad" name="ido" />
+            <ui:VisualElement style="height: auto; justify-content: space-between; width: 40%; padding-top: 8px; padding-bottom: 8px; align-self: stretch;">
+                <ui:FloatField name="diameter" style="width: 90%;" />
+                <ui:FloatField name="speed" style="width: 90%;" />
+                <ui:FloatField name="time" style="width: 90%;" />
             </ui:VisualElement>
         </ui:VisualElement>
         <ui:ScrollView mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" name="szinek" style="width: 100%; height: 10%;" />

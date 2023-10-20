@@ -21,18 +21,20 @@ public class UIcontroller : MonoBehaviour
 	public UIDocument mainDoc;
 
 	//ui elements
-	[HideInInspector] public Button calculateButton;
+	[HideInInspector] public Button calculateButton, gyroButton;
 	Button settingsButton;
 	Label errorLabel, litersLabel;
 	Label colorLabel, plusColorLabel;
-	TextField timeField, speedField, diameterField;
+	FloatField timeField, speedField, diameterField;
 	ScrollView colours;
 	VisualElement renderWindow;
+
+	Coroutine flashCoroutine = null;
 
 	//events
 	public UnityEvent<int> onErrorStateChanged;
 	public UnityEvent<float> onSpeedChanged, onTimeChanged, onDiameterChanged;
-	public UnityEvent onCalculateButtonPressed;
+	public UnityEvent onCalculateButtonPressed, onGyroButtonPressed;
 	void Start()
 	{
 		onErrorStateChanged.AddListener(HandleError);
@@ -42,26 +44,26 @@ public class UIcontroller : MonoBehaviour
 		calculateButton = mainDoc.rootVisualElement.Q("calculate") as Button;
 		calculateButton.RegisterCallback<ClickEvent>(Calculate);
 
+		gyroButton = mainDoc.rootVisualElement.Q("gyroscope") as Button;
+		gyroButton.RegisterCallback<ClickEvent>((_) => onGyroButtonPressed.Invoke());
+		if (!SystemInfo.supportsGyroscope)
+		{
+			gyroButton.style.unityBackgroundImageTintColor = Color.yellow;
+			gyroButton.SetEnabled(false);
+		}
+
+		settingsButton = mainDoc.rootVisualElement.Q("settings") as Button;
+		settingsButton.RegisterCallback<ClickEvent>(ToggleSettings);
+
 		//text
 		litersLabel = mainDoc.rootVisualElement.Q("liters") as Label;
 		errorLabel = mainDoc.rootVisualElement.Q("errorLabel") as Label;
 
-		//inpufield
-		speedField = mainDoc.rootVisualElement.Q("sebesseg") as TextField;
-		diameterField = mainDoc.rootVisualElement.Q("meret") as TextField;
-
-		diameterField.RegisterCallback((ChangeEvent<string> e) =>
-		{
-			try
-			{
-				onDiameterChanged.Invoke(float.Parse(e.newValue));
-			}
-			catch (System.Exception exc)
-			{
-				Debug.LogException(exc);
-			}
-		});
-		timeField = mainDoc.rootVisualElement.Q("ido") as TextField;
+		//inputfield
+		speedField = mainDoc.rootVisualElement.Q("speed") as FloatField;
+		diameterField = mainDoc.rootVisualElement.Q("diameter") as FloatField;
+		diameterField.RegisterCallback((ChangeEvent<float> e) => onDiameterChanged.Invoke(e.newValue));
+		timeField = mainDoc.rootVisualElement.Q("time") as FloatField;
 
 		//scrollview
 		colours = mainDoc.rootVisualElement.Q("szinek") as ScrollView;
@@ -98,6 +100,17 @@ public class UIcontroller : MonoBehaviour
 			calculateButton.SetEnabled(b);
 			calculateButton.style.color = new(b ? Color.white : Color.red);
 		});
+
+		gyroHandler.onGyroscopeStateChanged.AddListener((bool b) =>
+		{
+			if (!gyroButton.enabledInHierarchy) return;
+			gyroButton.style.unityBackgroundImageTintColor = b ? Color.green : Color.white;
+		});
+		gyroHandler.onGyroButtonFlashed.AddListener(() =>
+		{
+			if (flashCoroutine != null) StopCoroutine(flashCoroutine);
+			flashCoroutine = StartCoroutine(Utils.Flash(gyroButton, .3f, Color.red));
+		});
 	}
 	private void Update()
 	{
@@ -111,18 +124,18 @@ public class UIcontroller : MonoBehaviour
 		{
 			case 0:
 				errorLabel.style.display = DisplayStyle.None;
-				errorLabel.text = "jÛ";
+				errorLabel.text = "j√≥";
 				renderWindow.style.display = DisplayStyle.Flex;
 				break;
 			case 1:
 				renderWindow.style.display = DisplayStyle.None;
 				errorLabel.style.display = DisplayStyle.Flex;
-				errorLabel.text = "nem megfelelı bemenet, kÈrlek csak sz·mokat haszn·lj";
+				errorLabel.text = "nem megfelel√µ bemenet, k√©rlek csak sz√°mokat haszn√°lj";
 				break;
 			case 2:
 				renderWindow.style.display = DisplayStyle.None;
 				errorLabel.style.display = DisplayStyle.Flex;
-				errorLabel.text = "t˙l nagy a sz·m, hogy leszimul·ljuk";
+				errorLabel.text = "t√∫l nagy a sz√°m, hogy leszimul√°ljuk";
 				break;
 		}
 	}
@@ -130,12 +143,12 @@ public class UIcontroller : MonoBehaviour
 	//calc clicked, try to invoke inputfield data
 	public void Calculate(ClickEvent evt)
 	{
-		Debug.Log("calc");
+		//Debug.Log("calc");
 		try
 		{
-			onTimeChanged.Invoke(float.Parse(timeField.value));
-			onSpeedChanged.Invoke(float.Parse(speedField.value));
-			onDiameterChanged.Invoke(float.Parse(diameterField.value));
+			onTimeChanged.Invoke(timeField.value);
+			onSpeedChanged.Invoke(speedField.value);
+			onDiameterChanged.Invoke(diameterField.value);
 		}
 		catch (System.Exception)
 		{
@@ -143,8 +156,18 @@ public class UIcontroller : MonoBehaviour
 			throw;
 		}
 		onErrorStateChanged.Invoke(0);
-
-		//call simulation func
 		onCalculateButtonPressed.Invoke();
+	}
+
+	//setting on or off
+	public void ToggleSettings(ClickEvent evt)
+	{
+		Debug.Log("ToggleSettings");
+		if (settingsMenu.activeSelf == false)
+		{
+			settingsMenu.SetActive(true);
+			Debug.Log("be");
+		}
+		else { settingsMenu.SetActive(false); Debug.Log("ki"); }
 	}
 }

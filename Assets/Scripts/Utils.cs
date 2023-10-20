@@ -1,6 +1,5 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.UI;
 
 public static class Utils
 {
@@ -45,7 +44,7 @@ public static class Utils
 	}
 #endif
 
-	public static IEnumerator FlashImage(Image image, float time, Color color)
+	public static IEnumerator Flash(UnityEngine.UI.Image image, float time, Color color)
 	{
 		float t = 0;
 		Color originalColor = image.color;
@@ -66,6 +65,28 @@ public static class Utils
 		}
 		
 		image.color = originalColor;
+	}
+	public static IEnumerator Flash(UnityEngine.UIElements.VisualElement element, float time, Color color)
+	{
+		float t = 0;
+		Color originalColor = element.style.unityBackgroundImageTintColor.value;
+
+		while (t <= time / 2f)
+		{
+			element.style.unityBackgroundImageTintColor = Color.Lerp(originalColor, color, t / (time / 2f));
+			t += Time.deltaTime;
+			yield return null;
+		}
+		element.style.unityBackgroundImageTintColor = color;
+		t = 0;
+		while (t <= time / 2f)
+		{
+			element.style.unityBackgroundImageTintColor = Color.Lerp(color, originalColor, t / (time / 2f));
+			t += Time.deltaTime;
+			yield return null;
+		}
+
+		element.style.unityBackgroundImageTintColor = originalColor;
 	}
 }
 

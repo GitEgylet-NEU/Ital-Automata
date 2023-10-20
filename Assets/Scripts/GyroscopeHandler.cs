@@ -1,36 +1,31 @@
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.UI;
 
 public class GyroscopeHandler : MonoBehaviour
 {
 	public static GyroscopeHandler instance;
 
 	[SerializeField] FluidContainer fluidContainer;
-	public bool gyroEnabled;
-	public float rotation;
-	[HideInInspector] public Button gyroButton;
+	public bool gyroEnabled { get; private set; }
+	float rotation;
 
 	[SerializeField] Transform reference, actual;
 
-	public UnityEvent<bool> gyroscopeButtonEnabled = new();
-	public UnityEvent<Color> gyroscopeButtonColorChanged = new();
-	/// <summary>Calls when the gyroscope button should be flashed.
-	/// Listeners should run <see cref="Utils.FlashImage(Image, float, Color)"/> and pass the gyroscope button's image.</summary>
-	public UnityEvent gyroscopeButtonFlashed = new();
+	/// <summary>Calls when the gyroscope has been enabled or disabled.</summary>
+	public UnityEvent<bool> onGyroscopeStateChanged;
+	/// <summary>Calls when the gyroscope button should be flashed. Listeners should run <see cref="Utils.Flash"/> and pass the gyroscope button.</summary>
+	public UnityEvent onGyroButtonFlashed;
 
 	private void Awake()
 	{
 		instance = this;
+	}
 
-		gyroButton = GetComponent<Button>();
-
+	private void Start()
+	{
 		if (SystemInfo.supportsGyroscope)
 		{
 			Input.gyro.enabled = true;
-			gyroEnabled = true;
-
-			gyroscopeButtonEnabled.Invoke(true);
 		}
 		else
 		{
@@ -39,33 +34,16 @@ public class GyroscopeHandler : MonoBehaviour
 			Utils.ShowAndroidToastMessage("Run the app on a device that supports a gyroscope to fully enjoy the experience!");
 #endif
 			gyroEnabled = false;
-			gyroButton.interactable = false;
-			gyroButton.image.color = Color.yellow;
-
-			gyroscopeButtonEnabled.Invoke(false);
-			gyroscopeButtonColorChanged.Invoke(Color.yellow);
-
 			enabled = false;
 		}
-		
-		//TODO: listen to button press
-	}
 
-	private void Start()
-	{
-		if (gyroEnabled)
-		{
-			reference.rotation = GyroToUnity(Input.gyro.attitude);
-		}
+		UIcontroller.instance.onGyroButtonPressed.AddListener(GyroscopeButton);
 	}
 
 	private void Update()
 	{
 		if (gyroEnabled)
 		{
-			gyroButton.image.color = Color.green;
-			gyroscopeButtonColorChanged.Invoke(Color.green);
-
 			actual.rotation = GyroToUnity(Input.gyro.attitude);
 			Vector3 eulerRot = actual.localRotation.eulerAngles;
 			actual.localRotation = Quaternion.Euler(0, 0, eulerRot.z);
@@ -74,8 +52,6 @@ public class GyroscopeHandler : MonoBehaviour
 		}
 		else
 		{
-			gyroButton.image.color = Color.red;
-			gyroscopeButtonColorChanged.Invoke(Color.red);
 			rotation = 0f;
 		}
 		fluidContainer.rotation = rotation;
@@ -89,6 +65,7 @@ public class GyroscopeHandler : MonoBehaviour
 		{
 			reference.rotation = GyroToUnity(Input.gyro.attitude);
 		}
+		onGyroscopeStateChanged.Invoke(gyroEnabled);
 	}
 
 	//source: https://docs.unity3d.com/ScriptReference/Gyroscope.html
