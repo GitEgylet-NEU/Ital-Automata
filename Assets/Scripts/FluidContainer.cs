@@ -5,6 +5,8 @@ using UnityEngine;
 [ExecuteAlways]
 public class FluidContainer : MonoBehaviour
 {
+	public static FluidContainer instance;
+
 	// 1u = 1dm
 	// 1l = 1dm^2
 	[Min(0), Tooltip("Width of container in decimetres")] public float width = 1f;
@@ -23,6 +25,8 @@ public class FluidContainer : MonoBehaviour
 
 	private void Awake()
 	{
+		instance = this;
+
 		lineRenderer = GetComponent<LineRenderer>();
 		lineRenderer.enabled = true;
 		lineRenderer.positionCount = 4;
@@ -38,7 +42,7 @@ public class FluidContainer : MonoBehaviour
 		Awake();
 	}
 
-	/// <param name="amount">Amount of fluid in liters</param>
+	/// <param name="amount">Amount of fluid in litersLabel</param>
 	public void AddFluid(float amount, Color color)
 	{
 		if (liters == 0f)
@@ -53,7 +57,7 @@ public class FluidContainer : MonoBehaviour
 		float averageB = (liters * fluidColor.b + amount * color.b) / (liters + amount);
 		float averageA = (liters * fluidColor.a + amount * color.a) / (liters + amount);
 		fluidColor = new Color(averageR, averageG, averageB, averageA);
-		//Debug.Log($"{liters} * {fluidColor.r} & {amount} * {color.r} | {averageR}"); //debug
+		//Debug.Log($"{litersLabel} * {fluidColor.r} & {amount} * {color.r} | {averageR}"); //debug
 		liters += amount;
 	}
 
@@ -93,7 +97,7 @@ public class FluidContainer : MonoBehaviour
 		}
 		else fluidMeshRenderer.enabled = true;
 
-		fluidMeshRenderer.sharedMaterial.color = fluidColor;
+		fluidMeshRenderer.material.color = fluidColor;
 
 		float neededHeight = liters / width;
 		float heightA = Mathf.Tan(rotation * Mathf.Deg2Rad) * (width / 2f);

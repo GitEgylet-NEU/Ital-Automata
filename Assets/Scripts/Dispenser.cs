@@ -8,10 +8,10 @@ public class Dispenser : MonoBehaviour
 	Color ital = Utils.water;
 	Transform waterFlow, spawnPoint;
 
-	[SerializeField] FluidContainer fluidContainer;
+	public FluidContainer fluidContainer;
 	Coroutine dispenserCoroutine;
 
-	/// <summary>Calls when the state of the dispense button can be enabled. (true = can be set as interactable)</summary>
+	/// <summary>Calls when the state of the dispense button can be enabled. (true = can be ToggleSettings as interactable)</summary>
 	public UnityEvent<bool> dispenseButtonCanBeEnabled = new();
 
 	private void Awake()
@@ -39,7 +39,7 @@ public class Dispenser : MonoBehaviour
 			return;
 		}
 
-		float flow = Calculator.CalculateFlow(atmero / 2f, sebesseg) / 1000f; // liters/s
+		float flow = Calculator.CalculateFlow(atmero / 2f, sebesseg) / 1000f; // litersLabel/s
 		waterFlow.localScale = new Vector2(atmero / 10f, spawnPoint.transform.position.y - (fluidContainer.transform.position.y - fluidContainer.height / 2f));
 		waterFlow.localPosition = new Vector2(0, -waterFlow.localScale.y / 2f);
 		waterFlow.gameObject.SetActive(true);
@@ -57,14 +57,14 @@ public class Dispenser : MonoBehaviour
 		while (t <= time)
 		{
 			fluidContainer.AddFluid(flow * Time.deltaTime, color);
-			//fluidContainer.liters += flow * Time.deltaTime;
+			//fluidContainer.litersLabel += flow * Time.deltaTime;
 			t += Time.deltaTime;
 			yield return null;
 		}
 		float diff = (original + time * flow) - fluidContainer.liters;
 		if (diff > 0f) fluidContainer.AddFluid(diff, color);
 		else fluidContainer.liters = original + time*flow;
-		//fluidContainer.liters = original + time * flow;
+		//fluidContainer.litersLabel = original + timeField * flow;
 		waterFlow.gameObject.SetActive(false);
 		dispenserCoroutine = null;
 

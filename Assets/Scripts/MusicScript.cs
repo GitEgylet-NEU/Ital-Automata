@@ -24,7 +24,7 @@ public class MusicScript : MonoBehaviour
         musicPlaying = false;
         musicPaused = false;
         Music.Stop();
-        var option = Select.options[Select.value].text; //NullReferenceException: Object reference not set to an instance of an object
+        var option = Select.options[Select.value].text; //NullReferenceException: Object reference not ToggleSettings to an instance of an object
         if (option == "Local Forecast (Elevator)")
         {
             Music.clip = Resources.Load<AudioClip>("Audio/elevatormusic");

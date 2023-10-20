@@ -1,149 +1,128 @@
-using JetBrains.Annotations;
-using System.ComponentModel;
-using UnityEditor.UI;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 public class UIcontroller : MonoBehaviour
 {
-    public GameObject settingsmenu;
-    UIDocument maindoc;
+	public Dispenser dispenser;
+	public GyroscopeHandler gyroHandler;
+	public GameObject settingsMenu;
+	UIDocument mainDoc;
 
-    //ui elements
-    Button buttoncalc, buttonset;
-    Label error, liters;
-    TextField time, speed, size;
-    ScrollView colours;
-    VisualElement renderWindow;
+	//ui elements
+	Button calculateButton, settingsButton;
+	Label errorLabel, litersLabel;
+	TextField timeField, speedField, diameterField;
+	ScrollView colours;
+	VisualElement renderWindow;
 
-    //events
-    public UnityEvent<int> errorstate;
-    public UnityEvent<float> speedevent, timeevent, sizeevent;
-    void Start()
-    {
-        errorstate.AddListener(errorchange);
+	//events
+	public UnityEvent<int> errorState;
+	public UnityEvent<float> speedChanged, timeChanged, diameterChanged;
+	void Start()
+	{
+		errorState.AddListener(HandleError);
 
-        //debug
-        speedevent.AddListener(speedchange);
+		mainDoc = GetComponent<UIDocument>();
 
-        maindoc = GetComponent<UIDocument>();
+		//button
+		calculateButton = mainDoc.rootVisualElement.Q("calculate") as Button;
+		calculateButton.RegisterCallback<ClickEvent>(Calculate);
 
-        //button
-        buttoncalc = maindoc.rootVisualElement.Q("calculate") as Button;
-        buttoncalc.RegisterCallback<ClickEvent>(calc);
+		settingsButton = mainDoc.rootVisualElement.Q("settings") as Button;
+		settingsButton.RegisterCallback<ClickEvent>(ToggleSettings);
 
-        buttonset = maindoc.rootVisualElement.Q("set") as Button;
-        buttonset.RegisterCallback<ClickEvent>(set);
+		//text
+		litersLabel = mainDoc.rootVisualElement.Q("liters") as Label;
+		errorLabel = mainDoc.rootVisualElement.Q("errorLabel") as Label;
 
-        //text
-        liters = maindoc.rootVisualElement.Q("litersUSS") as Label;
-        error = maindoc.rootVisualElement.Q("error") as Label;
+		//inpufield
+		speedField = mainDoc.rootVisualElement.Q("sebesseg") as TextField;
+		diameterField = mainDoc.rootVisualElement.Q("meret") as TextField;
+		timeField = mainDoc.rootVisualElement.Q("ido") as TextField;
 
-        //inpufield
-        speed = maindoc.rootVisualElement.Q("sebesseg") as TextField;
+		//scrollview
+		colours = mainDoc.rootVisualElement.Q("szinek") as ScrollView;
+		colours.RegisterCallback<ClickEvent>(kolor);
 
-        size = maindoc.rootVisualElement.Q("meret") as TextField;
+		//renderwindow
+		renderWindow = mainDoc.rootVisualElement.Q("rendererUSS") as VisualElement;
+	}
+	private void Update()
+	{
+		//hunornak ha nincs adat
+		//uncomment merge után
+		litersLabel.text = Utils.FormatVolume(dispenser.fluidContainer.liters);
+	}
 
-        time = maindoc.rootVisualElement.Q("ido") as TextField;
+	//errorLabel box state change based on event int
+	public void HandleError(int state)
+	{
+		switch (state)
+		{
+			case 0:
+				errorLabel.style.display = DisplayStyle.None;
+				errorLabel.text = "jó";
+				renderWindow.style.display = DisplayStyle.Flex;
+				break;
+			case 1:
+				renderWindow.style.display = DisplayStyle.None;
+				errorLabel.style.display = DisplayStyle.Flex;
+				errorLabel.text = "nem megfelelõ bemenet, kérlek csak számokat használj";
+				break;
+			case 2:
+				renderWindow.style.display = DisplayStyle.None;
+				errorLabel.style.display = DisplayStyle.Flex;
+				errorLabel.text = "túl nagy a szám, hogy leszimuláljuk";
+				break;
+		}
+	}
 
-        //scrollview
-        colours = maindoc.rootVisualElement.Q("szinek") as ScrollView;
-        colours.RegisterCallback<ClickEvent>(kolor);
-        Color kolort = new Color(0f, 05f, 1f);
+	//calc clicked, try to invoke inputfield data
+	public void Calculate(ClickEvent evt)
+	{
+		Debug.Log("calc");
+		try
+		{
+			timeChanged.Invoke(float.Parse(timeField.value));
+			speedChanged.Invoke(float.Parse(speedField.value));
+			diameterChanged.Invoke(float.Parse(diameterField.value));
+		}
+		catch (System.Exception)
+		{
+			errorState.Invoke(1);
+			throw;
+		}
+		errorState.Invoke(0);
+		//call simulation func
+		calculateButton.style.backgroundColor = Color.red;
+	}
 
-        //renderwindow
-        renderWindow = maindoc.rootVisualElement.Q("rendererUSS") as VisualElement;
+	//setting on or off
+	public void ToggleSettings(ClickEvent evt)
+	{
+		Debug.Log("ToggleSettings");
+		if (settingsMenu.activeSelf == false)
+		{
+			settingsMenu.SetActive(true);
+			Debug.Log("be");
+		}
+		else { settingsMenu.SetActive(false); Debug.Log("ki"); }
+	}
 
-    }
-    private void Update()
-    {
-        //hunornak ha nincs adat
-        buttoncalc.SetEnabled(false);
-        //uncomment merge után
-        //liters.text = Utils.FormatValue(fluidContainer.liters);
-    }
-
-    //error box state change based on event int
-    public void errorchange(int state) 
-    {
-        switch (state)
-        {
-            case 0:
-                error.style.display = new(StyleKeyword.Null);
-                error.text = "jó";
-                renderWindow.style.display = StyleKeyword.Initial;
-
-                break;
-
-                case 1:
-                renderWindow.style.display = StyleKeyword.Null;
-                error.style.display = new(StyleKeyword.Initial);
-                error.text = "nem megfelelõ bemenet, kérlek csak számokat használj";
-                break;
-            case 2:
-                renderWindow.style.display = new(StyleKeyword.Null);
-                error.style.display = new(StyleKeyword.Initial);
-                error.text = "túl nagy a szám hogy leszimuláljuk";
-                break;
-        }
-    }
-    public void taimeset(InputEvent evt) 
-    {
-        Debug.Log(time.value);
-    }
-
-    //calc clicked, try to invoke inputfield data
-    public void calc(ClickEvent evt)
-    {
-        Debug.Log("calc");
-        try
-        {
-            timeevent.Invoke(float.Parse(time.value));
-            speedevent.Invoke(float.Parse(speed.value));
-            sizeevent.Invoke(float.Parse(size.value));
-        }
-        catch (System.Exception)
-        {
-            errorstate.Invoke(1);
-            throw;
-        }
-        errorstate.Invoke(0);
-        Debug.Log("Calculate");
-        //call simulation func
-        buttoncalc.style.backgroundColor = Color.red;
-    }
-
-    //setting on or off
-    public void set(ClickEvent evt)
-    {
-        Debug.Log("set");
-        if (settingsmenu.activeSelf == false)
-        {
-            settingsmenu.SetActive(true);
-            Debug.Log("be");
-        }
-        else { settingsmenu.SetActive(false); Debug.Log("ki"); }
-    }
-
-    //kolor test
-    public void kolor(ClickEvent evt) 
-    {
-        //change scrollview children background color 
-        foreach (var child in colours.Children())
-        {
-            float a = Random.Range(0f, 1f);
-            float b = Random.Range(0f, 1f);
-            float c = Random.Range(0f, 1f);
-            float d = Random.Range(0f, 1f);
-            child.style.backgroundColor = new Color(a,b,c,d);
-            var children = child as Label;
-            children.text = a.ToString() + " " + b.ToString() + " " + c.ToString() + " " + d.ToString() + " ";
-        }
-    }
-    //debug
-    public void speedchange(float state)
-    {
-        Debug.Log(state);  
-     
-    }
+	//kolor test
+	public void kolor(ClickEvent evt)
+	{
+		//change scrollview children background color 
+		foreach (var child in colours.Children())
+		{
+			float a = Random.Range(0f, 1f);
+			float b = Random.Range(0f, 1f);
+			float c = Random.Range(0f, 1f);
+			float d = Random.Range(0f, 1f);
+			child.style.backgroundColor = new Color(a, b, c, d);
+			var children = child as Label;
+			children.text = a.ToString() + " " + b.ToString() + " " + c.ToString() + " " + d.ToString() + " ";
+		}
+	}
 }

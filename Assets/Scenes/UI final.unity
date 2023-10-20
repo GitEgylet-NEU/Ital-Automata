@@ -311,9 +311,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 028956c0bec9328459094dab84a03b34, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  simulationSceneName: FluidTest
   simCam: {fileID: 71938655}
   mainrender: {fileID: 302540201}
-  rendtexture: {fileID: 8400000, guid: beb123701fa0a5f4a9ae57f24c73d3ed, type: 2}
+  renderTexture: {fileID: 0}
 --- !u!1 &253276783
 GameObject:
   m_ObjectHideFlags: 0
@@ -528,17 +529,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c03d38378efe4c4d8a993a538585276, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  settingsmenu: {fileID: 1453096428}
-  errorstate:
+  settingsMenu: {fileID: 1453096428}
+  errorState:
     m_PersistentCalls:
       m_Calls: []
-  speedevent:
+  speedChanged:
     m_PersistentCalls:
       m_Calls: []
-  timeevent:
+  timeChanged:
     m_PersistentCalls:
       m_Calls: []
-  sizeevent:
+  diameterChanged:
     m_PersistentCalls:
       m_Calls: []
 --- !u!1 &427489401
