@@ -15,7 +15,7 @@ public class UIcontroller : MonoBehaviour
 	UIDocument mainDoc;
 
 	//ui elements
-	[HideInInspector] public Button calculateButton;
+	[HideInInspector] public Button calculateButton, gyroButton;
 	Button settingsButton;
 	Label errorLabel, litersLabel;
 	TextField timeField, speedField, diameterField;
@@ -25,7 +25,7 @@ public class UIcontroller : MonoBehaviour
 	//events
 	public UnityEvent<int> onErrorStateChanged;
 	public UnityEvent<float> onSpeedChanged, onTimeChanged, onDiameterChanged;
-	public UnityEvent onCalculateButtonPressed;
+	public UnityEvent onCalculateButtonPressed, onGyroButtonPressed;
 	void Start()
 	{
 		onErrorStateChanged.AddListener(HandleError);
@@ -35,6 +35,15 @@ public class UIcontroller : MonoBehaviour
 		//button
 		calculateButton = mainDoc.rootVisualElement.Q("calculate") as Button;
 		calculateButton.RegisterCallback<ClickEvent>(Calculate);
+
+		gyroButton = mainDoc.rootVisualElement.Q("gyroscope") as Button;
+		gyroButton.RegisterCallback<ClickEvent>((_) => onGyroButtonPressed.Invoke());
+		if (!SystemInfo.supportsGyroscope)
+		{
+			gyroButton.style.unityBackgroundImageTintColor = Color.yellow;
+			Debug.Log(gyroButton.style.unityBackgroundImageTintColor);
+			gyroButton.SetEnabled(false);
+		}
 
 		settingsButton = mainDoc.rootVisualElement.Q("settings") as Button;
 		settingsButton.RegisterCallback<ClickEvent>(ToggleSettings);
@@ -71,6 +80,16 @@ public class UIcontroller : MonoBehaviour
 		{
 			calculateButton.SetEnabled(b);
 			calculateButton.style.color = new(b ? Color.white : Color.red);
+		});
+
+		gyroHandler.onGyroscopeStateChanged.AddListener((bool b) =>
+		{
+			if (!gyroButton.enabledInHierarchy) return;
+			gyroButton.style.unityBackgroundImageTintColor = b ? Color.green : Color.white;
+		});
+		gyroHandler.onGyroButtonFlashed.AddListener(() =>
+		{
+			StartCoroutine(Utils.Flash(gyroButton, .3f, Color.red));
 		});
 	}
 	private void Update()

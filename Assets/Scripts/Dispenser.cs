@@ -43,16 +43,16 @@ public class Dispenser : MonoBehaviour
 	{
 		if (dispenserCoroutine != null) return;
 
-//		if (GyroscopeHandler.instance.gyroEnabled)
-//		{
-//#if UNITY_ANDROID && !UNITY_EDITOR //run only on android devices
-//			Utils.ShowAndroidToastMessage("The gyroscope needs to be disabled!");
-//#endif
+		if (GyroscopeHandler.instance.gyroEnabled)
+		{
+#if UNITY_ANDROID && !UNITY_EDITOR //run only on android devices
+			Utils.ShowAndroidToastMessage("The gyroscope needs to be disabled!");
+#endif
 
-//			//StartCoroutine(Utils.FlashImage(GyroscopeHandler.instance.gyroButton.image, .3f, Color.red));
-//			GyroscopeHandler.instance.gyroscopeButtonFlashed.Invoke(); //tell UI to flash button
-//			return;
-//		}
+			//StartCoroutine(Utils.FlashImage(GyroscopeHandler.instance.gyroButton.image, .3f, Color.red));
+			GyroscopeHandler.instance.onGyroButtonFlashed.Invoke(); //tell UI to flash button
+			return;
+		}
 
 		float flow = Calculator.CalculateFlow(atmero / 2f, sebesseg) / 1000f; // litersLabel/s
 		waterFlow.localScale = new Vector2(atmero / 10f, spawnPoint.transform.position.y - (fluidContainer.transform.position.y - fluidContainer.height / 2f)) / (Vector2)transform.localScale;
