@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UIElements;
+using System.Collections.Generic;
+
 public class UIcontroller : MonoBehaviour
 {
 	public static UIcontroller instance;
@@ -12,12 +14,17 @@ public class UIcontroller : MonoBehaviour
 	public Dispenser dispenser;
 	public GyroscopeHandler gyroHandler;
 	public GameObject settingsMenu;
-	UIDocument mainDoc;
+
+	//define base colors
+	public List<Color> colorList = new List<Color> { };
+	public List<string> colorName = new List<string> { };
+	public UIDocument mainDoc;
 
 	//ui elements
 	[HideInInspector] public Button calculateButton;
 	Button settingsButton;
 	Label errorLabel, litersLabel;
+	Label colorLabel, plusColorLabel;
 	TextField timeField, speedField, diameterField;
 	ScrollView colours;
 	VisualElement renderWindow;
@@ -31,13 +38,9 @@ public class UIcontroller : MonoBehaviour
 		onErrorStateChanged.AddListener(HandleError);
 
 		mainDoc = GetComponent<UIDocument>();
-
 		//button
 		calculateButton = mainDoc.rootVisualElement.Q("calculate") as Button;
 		calculateButton.RegisterCallback<ClickEvent>(Calculate);
-
-		settingsButton = mainDoc.rootVisualElement.Q("settings") as Button;
-		settingsButton.RegisterCallback<ClickEvent>(ToggleSettings);
 
 		//text
 		litersLabel = mainDoc.rootVisualElement.Q("liters") as Label;
@@ -46,6 +49,7 @@ public class UIcontroller : MonoBehaviour
 		//inpufield
 		speedField = mainDoc.rootVisualElement.Q("sebesseg") as TextField;
 		diameterField = mainDoc.rootVisualElement.Q("meret") as TextField;
+
 		diameterField.RegisterCallback((ChangeEvent<string> e) =>
 		{
 			try
@@ -61,7 +65,21 @@ public class UIcontroller : MonoBehaviour
 
 		//scrollview
 		colours = mainDoc.rootVisualElement.Q("szinek") as ScrollView;
-		colours.RegisterCallback<ClickEvent>(kolor);
+        var @in = 0;
+        foreach (var n in colorList)
+		{
+            colorLabel = new Label();
+            colorLabel.AddToClassList("color");
+            colorLabel.name= n.ToString();
+			colorLabel.style.backgroundColor = n;
+			colorLabel.text = colorName[@in];
+			colours.Add(colorLabel);
+			Debug.Log("added");
+
+			//Label llaasd = mainDoc.rootVisualElement.Q(n.ToString) as Label;
+			//llaasd.RegisterCallback<ClickEvent>();
+			@in++;
+		}
 
 		//renderwindow
 		renderWindow = mainDoc.rootVisualElement.Q("rendererUSS") as VisualElement;
@@ -78,7 +96,6 @@ public class UIcontroller : MonoBehaviour
 		//hunornak ha nincs adat
 		litersLabel.text = Utils.FormatVolume(dispenser.fluidContainer.liters);
 	}
-
 	//errorLabel box state change based on event int
 	void HandleError(int state)
 	{
@@ -118,36 +135,8 @@ public class UIcontroller : MonoBehaviour
 			throw;
 		}
 		onErrorStateChanged.Invoke(0);
+
 		//call simulation func
 		onCalculateButtonPressed.Invoke();
-		//calculateButton.style.backgroundColor = Color.red;
-	}
-
-	//setting on or off
-	public void ToggleSettings(ClickEvent evt)
-	{
-		Debug.Log("ToggleSettings");
-		if (settingsMenu.activeSelf == false)
-		{
-			settingsMenu.SetActive(true);
-			Debug.Log("be");
-		}
-		else { settingsMenu.SetActive(false); Debug.Log("ki"); }
-	}
-
-	//kolor test
-	public void kolor(ClickEvent evt)
-	{
-		//change scrollview children background color 
-		foreach (var child in colours.Children())
-		{
-			float a = Random.Range(0f, 1f);
-			float b = Random.Range(0f, 1f);
-			float c = Random.Range(0f, 1f);
-			float d = Random.Range(0f, 1f);
-			child.style.backgroundColor = new Color(a, b, c, d);
-			var children = child as Label;
-			children.text = a.ToString() + " " + b.ToString() + " " + c.ToString() + " " + d.ToString() + " ";
-		}
 	}
 }

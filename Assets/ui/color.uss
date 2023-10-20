@@ -1,0 +1,20 @@
+.unity-slider {
+    flex-direction: row;
+    align-items: center;
+}
+
+.unity-base-field__input {
+    background-color: rgba(0, 0, 0, 0);
+    border-top-width: 0;
+    border-right-width: 0;
+    border-bottom-width: 0;
+    border-left-width: 0;
+}
+
+.unity-label {
+    width: 50px;
+}
+
+.unity-text-field {
+    width: 131px;
+}
