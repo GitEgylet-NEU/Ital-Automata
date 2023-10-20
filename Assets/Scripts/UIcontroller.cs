@@ -1,27 +1,34 @@
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 public class UIcontroller : MonoBehaviour
 {
+	public static UIcontroller instance;
+	private void Awake()
+	{
+		instance = this;
+	}
+
 	public Dispenser dispenser;
 	public GyroscopeHandler gyroHandler;
 	public GameObject settingsMenu;
 	UIDocument mainDoc;
 
 	//ui elements
-	Button calculateButton, settingsButton;
+	[HideInInspector] public Button calculateButton;
+	Button settingsButton;
 	Label errorLabel, litersLabel;
 	TextField timeField, speedField, diameterField;
 	ScrollView colours;
 	VisualElement renderWindow;
 
 	//events
-	public UnityEvent<int> errorState;
-	public UnityEvent<float> speedChanged, timeChanged, diameterChanged;
+	public UnityEvent<int> onErrorStateChanged;
+	public UnityEvent<float> onSpeedChanged, onTimeChanged, onDiameterChanged;
+	public UnityEvent onCalculateButtonPressed;
 	void Start()
 	{
-		errorState.AddListener(HandleError);
+		onErrorStateChanged.AddListener(HandleError);
 
 		mainDoc = GetComponent<UIDocument>();
 
@@ -39,6 +46,17 @@ public class UIcontroller : MonoBehaviour
 		//inpufield
 		speedField = mainDoc.rootVisualElement.Q("sebesseg") as TextField;
 		diameterField = mainDoc.rootVisualElement.Q("meret") as TextField;
+		diameterField.RegisterCallback((ChangeEvent<string> e) =>
+		{
+			try
+			{
+				onDiameterChanged.Invoke(float.Parse(e.newValue));
+			}
+			catch (System.Exception exc)
+			{
+				Debug.LogException(exc);
+			}
+		});
 		timeField = mainDoc.rootVisualElement.Q("ido") as TextField;
 
 		//scrollview
@@ -47,16 +65,22 @@ public class UIcontroller : MonoBehaviour
 
 		//renderwindow
 		renderWindow = mainDoc.rootVisualElement.Q("rendererUSS") as VisualElement;
+
+		//events
+		dispenser.onButtonStateChanged.AddListener((bool b) =>
+		{
+			calculateButton.SetEnabled(b);
+			calculateButton.style.color = new(b ? Color.white : Color.red);
+		});
 	}
 	private void Update()
 	{
 		//hunornak ha nincs adat
-		//uncomment merge után
 		litersLabel.text = Utils.FormatVolume(dispenser.fluidContainer.liters);
 	}
 
 	//errorLabel box state change based on event int
-	public void HandleError(int state)
+	void HandleError(int state)
 	{
 		switch (state)
 		{
@@ -84,18 +108,19 @@ public class UIcontroller : MonoBehaviour
 		Debug.Log("calc");
 		try
 		{
-			timeChanged.Invoke(float.Parse(timeField.value));
-			speedChanged.Invoke(float.Parse(speedField.value));
-			diameterChanged.Invoke(float.Parse(diameterField.value));
+			onTimeChanged.Invoke(float.Parse(timeField.value));
+			onSpeedChanged.Invoke(float.Parse(speedField.value));
+			onDiameterChanged.Invoke(float.Parse(diameterField.value));
 		}
 		catch (System.Exception)
 		{
-			errorState.Invoke(1);
+			onErrorStateChanged.Invoke(1);
 			throw;
 		}
-		errorState.Invoke(0);
+		onErrorStateChanged.Invoke(0);
 		//call simulation func
-		calculateButton.style.backgroundColor = Color.red;
+		onCalculateButtonPressed.Invoke();
+		//calculateButton.style.backgroundColor = Color.red;
 	}
 
 	//setting on or off

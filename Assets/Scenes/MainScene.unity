@@ -533,16 +533,19 @@ MonoBehaviour:
   dispenser: {fileID: 1693343967}
   gyroHandler: {fileID: 0}
   settingsMenu: {fileID: 1453096428}
-  errorState:
+  onErrorStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  speedChanged:
+  onSpeedChanged:
     m_PersistentCalls:
       m_Calls: []
-  timeChanged:
+  onTimeChanged:
     m_PersistentCalls:
       m_Calls: []
-  diameterChanged:
+  onDiameterChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  onCalculateButtonPressed:
     m_PersistentCalls:
       m_Calls: []
 --- !u!1 &386373973
@@ -1345,7 +1348,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fluidContainer: {fileID: 1473612359}
-  dispenseButtonCanBeEnabled:
+  onButtonStateChanged:
     m_PersistentCalls:
       m_Calls: []
 --- !u!212 &1693343968
@@ -1497,7 +1500,7 @@ Camera:
     serializedVersion: 2
     m_Bits: 1
   m_RenderingPath: -1
-  m_TargetTexture: {fileID: 8400000, guid: 74a1a14aa64979d42964af43d2422a43, type: 2}
+  m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
   m_TargetEye: 3
   m_HDR: 1
