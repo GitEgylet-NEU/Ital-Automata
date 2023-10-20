@@ -4,39 +4,43 @@ using UnityEngine;
 
 public class SoundEffects : MonoBehaviour
 {
-    AudioSource Blugy = new();
-    AudioSource Brrrrr = new();
-    AudioSource Boop = new();
-    AudioSource Lotty = new();
-
     private void Start()
     {
-        Blugy.clip = Resources.Load<AudioClip>("SFX/blugy");
-        Brrrrr.clip = Resources.Load<AudioClip>("SFX/brrrrr");
-        Boop.clip = Resources.Load<AudioClip>("SFX/boop");
-        Lotty.clip = Resources.Load<AudioClip>("SFX/lotty");
         UIcontroller.instance.onCalculateButtonPressed.AddListener(() => PlaySound("boop"));
         UIcontroller.instance.onCalculateButtonPressed.AddListener(() => PlaySound("brrrrr"));
-        //Dispenser.instance.onButtonStateChanged.AddListener((bool x) => PlaySound("blugy"));
-        GyroscopeHandler.instance.onGyroButtonFlashed.AddListener(() => PlaySound("lotty"));
+        GyroscopeHandler.instance.onGyroButtonFlashed.AddListener(() => PlaySound("nope"));
     }
 
-    void PlaySound(string name)
+    public void PlaySound(string name)
     {
+        AudioSource SFX = gameObject.AddComponent<AudioSource>();
         switch (name)
         {
             case "blugy":
-                Blugy.Play();
+                SFX.clip = Resources.Load<AudioClip>("SFX/blugy");
                 break;
             case "brrrrr":
-                Brrrrr.Play();
+                SFX.clip = Resources.Load<AudioClip>("SFX/brrrrr");
                 break;
             case "boop":
-                Boop.Play();
+                SFX.clip = Resources.Load<AudioClip>("SFX/boop");
                 break;
             case "lotty":
-                Lotty.Play();
+                SFX.clip = Resources.Load<AudioClip>("SFX/lotty");
+                break;
+            case "nope":
+                SFX.clip = Resources.Load<AudioClip>("SFX/nope");
+                break;
+            case "nope2":
+                SFX.clip = Resources.Load<AudioClip>("SFX/nope2");
                 break;
         }
+        SFX.Play();
+        IEnumerator RemoveSFX()
+        {
+            Destroy(SFX);
+            yield return new WaitForSeconds(SFX.clip.length);
+        }
+        StartCoroutine(RemoveSFX());
     }
 }
