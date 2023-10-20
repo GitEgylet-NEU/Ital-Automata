@@ -8,11 +8,14 @@ public class ShowSimulation : MonoBehaviour
 	public UIDocument mainrender;
 	RenderTexture renderTexture;
 	VisualElement rendererui;
+	Button calcClick;
 	private void Start()
 	{
+		calcClick = mainrender.rootVisualElement.Q("calculate") as Button;
+		calcClick.SetEnabled(false);
 		rendererui = mainrender.rootVisualElement.Q("rendererUSS") as VisualElement;
 		Debug.Log("startkor: " + rendererui.contentRect.width);
-		StartCoroutine(Delay(1.5f));
+		StartCoroutine(Delay(0.7f));
 	}
 
 	IEnumerator Delay(float t)
@@ -28,5 +31,6 @@ public class ShowSimulation : MonoBehaviour
 		rendererui = mainrender.rootVisualElement.Q("rendererUSS") as VisualElement;
 		rendererui.style.backgroundImage = bg;
 		rendererui.style.backgroundSize = new StyleBackgroundSize(new BackgroundSize(BackgroundSizeType.Contain));
+		calcClick.SetEnabled(true);
 	}
 }
