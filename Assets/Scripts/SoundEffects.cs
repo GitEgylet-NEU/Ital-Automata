@@ -18,7 +18,7 @@ public class SoundEffects : MonoBehaviour
         UIcontroller.instance.onCalculateButtonPressed.AddListener(() => PlaySound("boop"));
         UIcontroller.instance.onCalculateButtonPressed.AddListener(() => PlaySound("brrrrr"));
         //Dispenser.instance.onButtonStateChanged.AddListener((bool x) => PlaySound("blugy"));
-        GyroscopeHandler.instance.gyroscopeButtonFlashed.AddListener(() => PlaySound("lotty"));
+        GyroscopeHandler.instance.onGyroButtonFlashed.AddListener(() => PlaySound("lotty"));
     }
 
     void PlaySound(string name)

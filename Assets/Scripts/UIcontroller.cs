@@ -22,6 +22,8 @@ public class UIcontroller : MonoBehaviour
 	ScrollView colours;
 	VisualElement renderWindow;
 
+	Coroutine flashCoroutine = null;
+
 	//events
 	public UnityEvent<int> onErrorStateChanged;
 	public UnityEvent<float> onSpeedChanged, onTimeChanged, onDiameterChanged;
@@ -89,7 +91,8 @@ public class UIcontroller : MonoBehaviour
 		});
 		gyroHandler.onGyroButtonFlashed.AddListener(() =>
 		{
-			StartCoroutine(Utils.Flash(gyroButton, .3f, Color.red));
+			if (flashCoroutine != null) StopCoroutine(flashCoroutine);
+			flashCoroutine = StartCoroutine(Utils.Flash(gyroButton, .3f, Color.red));
 		});
 	}
 	private void Update()
