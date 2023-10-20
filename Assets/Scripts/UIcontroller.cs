@@ -78,13 +78,11 @@ public class UIcontroller : MonoBehaviour
 			colorLabel.text = colorName[@in];
 			colorLabel.RegisterCallback<ClickEvent>((_) =>
 			{
-				Debug.Log($"{colorLabel.text} selected");
 				dispenser.ital = n;
 				calculateButton.style.backgroundColor = n;
 
 			});
 			colours.Add(colorLabel);
-			Debug.Log("added");
 
 			//Label llaasd = mainDoc.rootVisualElement.Q(n.ToString) as Label;
 			//llaasd.RegisterCallback<ClickEvent>();
