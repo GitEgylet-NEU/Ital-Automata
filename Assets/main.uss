@@ -118,6 +118,7 @@
     font-size: 28px;
     width: 180px;
     -unity-paragraph-spacing: -4px;
+    white-space: normal;
 }
 
 .text-outline {
