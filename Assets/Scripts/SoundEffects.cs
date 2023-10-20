@@ -38,8 +38,8 @@ public class SoundEffects : MonoBehaviour
         SFX.Play();
         IEnumerator RemoveSFX()
         {
-            Destroy(SFX);
             yield return new WaitForSeconds(SFX.clip.length);
+            Destroy(SFX);
         }
         StartCoroutine(RemoveSFX());
     }
