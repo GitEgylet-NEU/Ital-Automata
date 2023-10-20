@@ -78,7 +78,11 @@ public class QuantityCalculatorTest : MonoBehaviour
 			folytat = false;
 		}
 		outputText.text = string.Empty;
-		if (!folytat) return;
+		if (!folytat)
+        {
+			outputText.text = "Hibás érték!";
+			return;
+        }
 
 		float quantity = Calculator.CalculateQuantity(atmero / 2f, sebesseg, ido);
 		outputText.text = Utils.FormatVolume(quantity / 1000f);

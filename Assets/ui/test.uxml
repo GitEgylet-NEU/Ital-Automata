@@ -1,0 +1,16 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/ui/test.uss?fileID=7433441132597879392&amp;guid=75ff41b95cbc3864fbf5fa0437bbdd20&amp;type=3#test" />
+    <ui:VisualElement style="flex-grow: 1; flex-direction: row; align-items: auto; justify-content: center; align-self: auto; margin-top: 10px; margin-right: 10px; margin-bottom: 10px; margin-left: 10px;">
+        <ui:Button text="Button" parse-escape-sequences="true" display-tooltip-when-elided="true" style="cursor: url(&apos;project://database/Assets/UI%20Toolkit/UnityThemes/UnityDefaultRuntimeTheme.tss?fileID=4154780841294389669&amp;guid=f92ec5d69d3383d43974ea35f3c6ddef&amp;type=3#arrow-down&apos;); width: 50%; max-width: none; min-width: 300px; align-self: flex-start; align-items: auto; justify-content: flex-start;" />
+        <ui:Button text="Button" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Button" style="white-space: nowrap; align-self: flex-start; align-items: auto; width: 20%; justify-content: flex-start; flex-direction: column; min-width: 200px;" />
+    </ui:VisualElement>
+    <ui:VisualElement style="flex-grow: 1; flex-direction: row; align-items: auto; justify-content: center; align-self: auto; margin-top: 10px; margin-right: 10px; margin-bottom: 10px; margin-left: 10px;">
+        <ui:Button text="Button" parse-escape-sequences="true" display-tooltip-when-elided="true" style="cursor: url(&apos;project://database/Assets/UI%20Toolkit/UnityThemes/UnityDefaultRuntimeTheme.tss?fileID=4154780841294389669&amp;guid=f92ec5d69d3383d43974ea35f3c6ddef&amp;type=3#arrow-down&apos;); width: 50%; max-width: none; min-width: 300px; align-self: flex-start; align-items: auto; justify-content: flex-start;" />
+        <ui:Button text="Button" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Button" style="white-space: nowrap; align-self: flex-start; align-items: auto; width: 20%; justify-content: flex-start; flex-direction: column; min-width: 200px;" />
+    </ui:VisualElement>
+    <ui:VisualElement style="flex-grow: 1; flex-direction: row; align-items: auto; justify-content: center; align-self: auto; margin-top: 10px; margin-right: 10px; margin-bottom: 10px; margin-left: 10px;">
+        <ui:Button text="Button" parse-escape-sequences="true" display-tooltip-when-elided="true" style="cursor: url(&apos;project://database/Assets/UI%20Toolkit/UnityThemes/UnityDefaultRuntimeTheme.tss?fileID=4154780841294389669&amp;guid=f92ec5d69d3383d43974ea35f3c6ddef&amp;type=3#arrow-down&apos;); width: 50%; max-width: none; min-width: 300px; align-self: flex-start; align-items: auto; justify-content: flex-start;" />
+        <ui:Button text="Button" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Button" style="white-space: nowrap; align-self: flex-start; align-items: auto; width: 20%; justify-content: flex-start; flex-direction: column; min-width: 200px;" />
+    </ui:VisualElement>
+    <ui:VisualElement style="flex-grow: 1; flex-direction: row; align-items: auto; justify-content: center; align-self: auto; margin-top: 10px; margin-right: 10px; margin-bottom: 10px; margin-left: 10px; height: 40%;" />
+</ui:UXML>
