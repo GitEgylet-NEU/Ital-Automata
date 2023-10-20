@@ -14,13 +14,11 @@ public class SettingsController : MonoBehaviour
 	{
 		mainDoc = GetComponent<UIDocument>();
 
-		playButton = mainDoc.rootVisualElement.Q("playMusic") as Button;
+		playButton = mainDoc.rootVisualElement.Q("startMusic") as Button;
 		pauseButton = mainDoc.rootVisualElement.Q("pauseMusic") as Button;
-		nextButton = mainDoc.rootVisualElement.Q("nextMusic") as Button;
 
 		playButton.RegisterCallback<ClickEvent>((_) => musicScript.StartStop());
 		pauseButton.RegisterCallback<ClickEvent>((_) => musicScript.Pause());
-		nextButton.RegisterCallback<ClickEvent>((_) => musicScript.Next());
 
 		closeButton = mainDoc.rootVisualElement.Q("close") as Button;
 		closeButton.RegisterCallback<ClickEvent>((_) => gameObject.SetActive(false));

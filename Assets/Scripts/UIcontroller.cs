@@ -33,7 +33,7 @@ public class UIcontroller : MonoBehaviour
 
 	//events
 	public UnityEvent<int> onErrorStateChanged;
-	public UnityEvent<float> onSpeedChanged, onTimeChanged, onDiameterChanged;
+	public UnityEvent<float> onSpeedChanged, onTimeChanged, onDiameterChanged = new();
 	public UnityEvent onCalculateButtonPressed, onGyroButtonPressed;
 	void Start()
 	{
