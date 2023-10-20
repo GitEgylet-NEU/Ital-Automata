@@ -97,6 +97,7 @@
     padding-right: 0;
     padding-top: 0;
     padding-bottom: 0;
+    -unity-text-align: upper-center;
 }
 
 .nev {
@@ -114,5 +115,12 @@
     border-bottom-right-radius: 20px;
     border-bottom-left-radius: 20px;
     -unity-text-align: middle-center;
-    font-size: 20px;
+    font-size: 28px;
+    width: 180px;
+    -unity-paragraph-spacing: -4px;
+}
+
+.text-outline {
+    -unity-text-outline-width: 1px;
+    -unity-text-outline-color: rgb(0, 0, 0);
 }

@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UIElements;
+using System.Collections.Generic;
+
 public class UIcontroller : MonoBehaviour
 {
 	public static UIcontroller instance;
@@ -12,12 +14,17 @@ public class UIcontroller : MonoBehaviour
 	public Dispenser dispenser;
 	public GyroscopeHandler gyroHandler;
 	public GameObject settingsMenu;
-	UIDocument mainDoc;
+
+	//define base colors
+	public List<Color> colorList = new();
+	public List<string> colorName = new();
+	public UIDocument mainDoc;
 
 	//ui elements
 	[HideInInspector] public Button calculateButton, gyroButton;
 	Button settingsButton;
 	Label errorLabel, litersLabel;
+	Label colorLabel, plusColorLabel;
 	FloatField timeField, speedField, diameterField;
 	ScrollView colours;
 	VisualElement renderWindow;
@@ -33,7 +40,6 @@ public class UIcontroller : MonoBehaviour
 		onErrorStateChanged.AddListener(HandleError);
 
 		mainDoc = GetComponent<UIDocument>();
-
 		//button
 		calculateButton = mainDoc.rootVisualElement.Q("calculate") as Button;
 		calculateButton.RegisterCallback<ClickEvent>(Calculate);
@@ -53,7 +59,7 @@ public class UIcontroller : MonoBehaviour
 		litersLabel = mainDoc.rootVisualElement.Q("liters") as Label;
 		errorLabel = mainDoc.rootVisualElement.Q("errorLabel") as Label;
 
-		//inpufield
+		//inputfield
 		speedField = mainDoc.rootVisualElement.Q("speed") as FloatField;
 		diameterField = mainDoc.rootVisualElement.Q("diameter") as FloatField;
 		diameterField.RegisterCallback((ChangeEvent<float> e) => onDiameterChanged.Invoke(e.newValue));
@@ -61,7 +67,29 @@ public class UIcontroller : MonoBehaviour
 
 		//scrollview
 		colours = mainDoc.rootVisualElement.Q("szinek") as ScrollView;
-		colours.RegisterCallback<ClickEvent>(kolor);
+        var @in = 0;
+        foreach (var n in colorList)
+		{
+            colorLabel = new Label();
+            colorLabel.AddToClassList("color");
+			colorLabel.AddToClassList("text-outline");
+			colorLabel.name= n.ToString();
+			colorLabel.style.backgroundColor = n;
+			colorLabel.text = colorName[@in];
+			colorLabel.RegisterCallback<ClickEvent>((_) =>
+			{
+				Debug.Log($"{colorLabel.text} selected");
+				dispenser.ital = n;
+				calculateButton.style.backgroundColor = n;
+
+			});
+			colours.Add(colorLabel);
+			Debug.Log("added");
+
+			//Label llaasd = mainDoc.rootVisualElement.Q(n.ToString) as Label;
+			//llaasd.RegisterCallback<ClickEvent>();
+			@in++;
+		}
 
 		//renderwindow
 		renderWindow = mainDoc.rootVisualElement.Q("rendererUSS") as VisualElement;
@@ -89,7 +117,6 @@ public class UIcontroller : MonoBehaviour
 		//hunornak ha nincs adat
 		litersLabel.text = Utils.FormatVolume(dispenser.fluidContainer.liters);
 	}
-
 	//errorLabel box state change based on event int
 	void HandleError(int state)
 	{
@@ -97,18 +124,18 @@ public class UIcontroller : MonoBehaviour
 		{
 			case 0:
 				errorLabel.style.display = DisplayStyle.None;
-				errorLabel.text = "jÛ";
+				errorLabel.text = "j√≥";
 				renderWindow.style.display = DisplayStyle.Flex;
 				break;
 			case 1:
 				renderWindow.style.display = DisplayStyle.None;
 				errorLabel.style.display = DisplayStyle.Flex;
-				errorLabel.text = "nem megfelelı bemenet, kÈrlek csak sz·mokat haszn·lj";
+				errorLabel.text = "nem megfelel√µ bemenet, k√©rlek csak sz√°mokat haszn√°lj";
 				break;
 			case 2:
 				renderWindow.style.display = DisplayStyle.None;
 				errorLabel.style.display = DisplayStyle.Flex;
-				errorLabel.text = "t˙l nagy a sz·m, hogy leszimul·ljuk";
+				errorLabel.text = "t√∫l nagy a sz√°m, hogy leszimul√°ljuk";
 				break;
 		}
 	}
@@ -142,21 +169,5 @@ public class UIcontroller : MonoBehaviour
 			Debug.Log("be");
 		}
 		else { settingsMenu.SetActive(false); Debug.Log("ki"); }
-	}
-
-	//kolor test
-	public void kolor(ClickEvent evt)
-	{
-		//change scrollview children background color 
-		foreach (var child in colours.Children())
-		{
-			float a = Random.Range(0f, 1f);
-			float b = Random.Range(0f, 1f);
-			float c = Random.Range(0f, 1f);
-			float d = Random.Range(0f, 1f);
-			child.style.backgroundColor = new Color(a, b, c, d);
-			var children = child as Label;
-			children.text = a.ToString() + " " + b.ToString() + " " + c.ToString() + " " + d.ToString() + " ";
-		}
 	}
 }

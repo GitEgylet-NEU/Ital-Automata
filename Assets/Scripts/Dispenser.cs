@@ -7,7 +7,7 @@ public class Dispenser : MonoBehaviour
 	public static Dispenser instance;
 
 	float atmero = 5f, sebesseg, ido; //cm, cm, s - kimenetben dm-nek kell lennie (1u=1dm)
-	Color ital = Utils.water;
+	public Color ital = Utils.water;
 	Transform waterFlow, spawnPoint;
 
 	public FluidContainer fluidContainer;
@@ -58,6 +58,7 @@ public class Dispenser : MonoBehaviour
 		waterFlow.localScale = new Vector2(atmero / 10f, spawnPoint.transform.position.y - (fluidContainer.transform.position.y - fluidContainer.height / 2f)) / (Vector2)transform.localScale;
 		waterFlow.localPosition = new Vector2(0, -waterFlow.localScale.y / 2f);
 		waterFlow.gameObject.SetActive(true);
+		waterFlow.GetComponent<SpriteRenderer>().color = ital;
 
 		dispenserCoroutine = StartCoroutine(DispenseAmount(flow, ido, ital));
 
