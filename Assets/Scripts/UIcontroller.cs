@@ -16,8 +16,8 @@ public class UIcontroller : MonoBehaviour
 	public GameObject settingsMenu;
 
 	//define base colors
-	public List<Color> colorList = new List<Color> { };
-	public List<string> colorName = new List<string> { };
+	public List<Color> colorList = new();
+	public List<string> colorName = new();
 	public UIDocument mainDoc;
 
 	//ui elements
@@ -70,9 +70,17 @@ public class UIcontroller : MonoBehaviour
 		{
             colorLabel = new Label();
             colorLabel.AddToClassList("color");
-            colorLabel.name= n.ToString();
+			colorLabel.AddToClassList("text-outline");
+			colorLabel.name= n.ToString();
 			colorLabel.style.backgroundColor = n;
 			colorLabel.text = colorName[@in];
+			colorLabel.RegisterCallback<ClickEvent>((_) =>
+			{
+				Debug.Log($"{colorLabel.text} selected");
+				dispenser.ital = n;
+				calculateButton.style.backgroundColor = n;
+
+			});
 			colours.Add(colorLabel);
 			Debug.Log("added");
 
