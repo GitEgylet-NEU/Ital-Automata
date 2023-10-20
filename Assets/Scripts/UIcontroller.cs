@@ -18,7 +18,7 @@ public class UIcontroller : MonoBehaviour
 	[HideInInspector] public Button calculateButton, gyroButton;
 	Button settingsButton;
 	Label errorLabel, litersLabel;
-	TextField timeField, speedField, diameterField;
+	FloatField timeField, speedField, diameterField;
 	ScrollView colours;
 	VisualElement renderWindow;
 
@@ -43,7 +43,6 @@ public class UIcontroller : MonoBehaviour
 		if (!SystemInfo.supportsGyroscope)
 		{
 			gyroButton.style.unityBackgroundImageTintColor = Color.yellow;
-			Debug.Log(gyroButton.style.unityBackgroundImageTintColor);
 			gyroButton.SetEnabled(false);
 		}
 
@@ -55,20 +54,10 @@ public class UIcontroller : MonoBehaviour
 		errorLabel = mainDoc.rootVisualElement.Q("errorLabel") as Label;
 
 		//inpufield
-		speedField = mainDoc.rootVisualElement.Q("sebesseg") as TextField;
-		diameterField = mainDoc.rootVisualElement.Q("meret") as TextField;
-		diameterField.RegisterCallback((ChangeEvent<string> e) =>
-		{
-			try
-			{
-				onDiameterChanged.Invoke(float.Parse(e.newValue));
-			}
-			catch (System.Exception exc)
-			{
-				Debug.LogException(exc);
-			}
-		});
-		timeField = mainDoc.rootVisualElement.Q("ido") as TextField;
+		speedField = mainDoc.rootVisualElement.Q("speed") as FloatField;
+		diameterField = mainDoc.rootVisualElement.Q("diameter") as FloatField;
+		diameterField.RegisterCallback((ChangeEvent<float> e) => onDiameterChanged.Invoke(e.newValue));
+		timeField = mainDoc.rootVisualElement.Q("time") as FloatField;
 
 		//scrollview
 		colours = mainDoc.rootVisualElement.Q("szinek") as ScrollView;
@@ -127,12 +116,12 @@ public class UIcontroller : MonoBehaviour
 	//calc clicked, try to invoke inputfield data
 	public void Calculate(ClickEvent evt)
 	{
-		Debug.Log("calc");
+		//Debug.Log("calc");
 		try
 		{
-			onTimeChanged.Invoke(float.Parse(timeField.value));
-			onSpeedChanged.Invoke(float.Parse(speedField.value));
-			onDiameterChanged.Invoke(float.Parse(diameterField.value));
+			onTimeChanged.Invoke(timeField.value);
+			onSpeedChanged.Invoke(speedField.value);
+			onDiameterChanged.Invoke(diameterField.value);
 		}
 		catch (System.Exception)
 		{
@@ -140,9 +129,7 @@ public class UIcontroller : MonoBehaviour
 			throw;
 		}
 		onErrorStateChanged.Invoke(0);
-		//call simulation func
 		onCalculateButtonPressed.Invoke();
-		//calculateButton.style.backgroundColor = Color.red;
 	}
 
 	//setting on or off
