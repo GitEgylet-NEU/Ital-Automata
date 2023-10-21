@@ -1,8 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using TMPro;
-using System.Linq;
 
 /*
 "Local Forecast - Elevator" Kevin MacLeod (incompetech.com)
@@ -15,61 +11,34 @@ http://creativecommons.org/licenses/by/4.0/
 
 public class MusicScript : MonoBehaviour
 {
-    string[] tracks = new string[]
-    {
-        "Local Forecast (Elevator)",
-        "The Cannery",
-        "Gaslamp Funworks",
-        "Stringed Disco"
-    };
-    int currentTrack;
-    bool musicPlaying;
-    bool musicPaused;
-    AudioSource Music;
-    //[SerializeField] TMPro.TMP_Dropdown Select;
+	public readonly string[] tracks = new string[]
+	{
+		"Local Forecast (Elevator)",
+		"The Cannery",
+		"Gaslamp Funworks",
+		"Stringed Disco"
+	};
+	int currentTrack;
+	public bool musicPlaying { get; private set; }
+	public bool musicPaused { get; private set; }
+	AudioSource Music;
 
-    void Start()
-    {
-        Music = GetComponent<AudioSource>();
-        Music.clip = Resources.Load<AudioClip>("Audio/elevatormusic");
-        currentTrack = 0;
-        Music.Play();
-        musicPlaying = true;
-        musicPaused = false;
-    }
+	void Start()
+	{
+		Music = GetComponent<AudioSource>();
+		Music.volume = .5f;
+		Music.clip = Resources.Load<AudioClip>("Audio/elevatormusic");
+		currentTrack = 0;
+		Music.Play();
+		musicPlaying = true;
+		musicPaused = false;
+	}
 
-    public void ChangeMusic()
-    {
-        musicPaused = false;
-        Music.Stop();
-        string option = tracks.First();
-        //var option = Select.options[Select.value].text;
-        switch (option)
-        {
-            case "Local Forecast (Elevator)":
-                Music.clip = Resources.Load<AudioClip>("Audio/elevatormusic");
-                break;
-            case "The Cannery":
-                Music.clip = Resources.Load<AudioClip>("Audio/thecannery");
-                break;
-            case "Gaslamp Funworks":
-                Music.clip = Resources.Load<AudioClip>("Audio/gaslampfunworks");
-                break;
-            case "Stringed Disco":
-                Music.clip = Resources.Load<AudioClip>("Audio/stringeddisco");
-                break;
-        }
-        if (musicPlaying)
-        {
-            Music.Play();
-        }
-    }
-
-	public void ChangeMusic(int i)
+	public void ChangeMusic(string track)
 	{
 		musicPaused = false;
 		Music.Stop();
-		switch (tracks[i])
+		switch (track)
 		{
 			case "Local Forecast (Elevator)":
 				Music.clip = Resources.Load<AudioClip>("Audio/elevatormusic");
@@ -88,42 +57,66 @@ public class MusicScript : MonoBehaviour
 		{
 			Music.Play();
 		}
-        currentTrack = i;
+		currentTrack = System.Array.IndexOf(tracks, track);
+	}
+
+	public void ChangeMusic(int i)
+	{
+		string track = tracks[i];
+		ChangeMusic(track);
 	}
 
 	public void StartStop()
-    {
-        musicPlaying = !musicPlaying;
-        if (musicPlaying)
-        {
-            Music.Play();
-        }
-        else
-        {
-            Music.Stop();
-        }
-    }
+	{
+		musicPlaying = !musicPlaying;
+		if (musicPlaying)
+		{
+			Music.Play();
+		}
+		else
+		{
+			Music.Stop();
+		}
+		musicPaused = false;
+	}
 
-    public void Pause()
-    {
-        if (musicPlaying)
-        {
-            musicPaused = !musicPaused;
-            if (musicPaused)
-            {
-                Music.Pause();
-            }
-            else
-            {
-                Music.UnPause();
-            }
-        }
-    }
+	public void Pause()
+	{
+		if (musicPlaying)
+		{
+			musicPaused = !musicPaused;
+			if (musicPaused)
+			{
+				Music.Pause();
+			}
+			else
+			{
+				Music.UnPause();
+			}
+		}
+	}
 
-    public void Next()
-    {
-        int i = currentTrack++;
-        if (i >= tracks.Length) i = 0;
-        ChangeMusic(i);
-    }
+	public void Next()
+	{
+		//if (!musicPlaying) return;
+		int i = currentTrack + 1;
+		if (i >= tracks.Length) i = 0;
+		ChangeMusic(i);
+		if (!musicPlaying) StartStop();
+	}
+
+	public string GetCurrentTrack()
+	{
+		if (!musicPlaying) return string.Empty;
+		return tracks[currentTrack];
+	}
+
+	public void SetVolume(float volume)
+	{
+		Music.volume = volume;
+	}
+	public float GetVolume()
+	{
+		return Music.volume;
+	}
 }

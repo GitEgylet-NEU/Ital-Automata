@@ -532,7 +532,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dispenser: {fileID: 1693343967}
   gyroHandler: {fileID: 386373978}
-  settingsMenu: {fileID: 1384937266}
+  settings: {fileID: 1384937269}
   colorList:
   - {r: 0, g: 0.69411767, b: 0.94509804, a: 0.6117647}
   - {r: 0.35920668, g: 0.90800005, b: 0.341408, a: 0.7490196}

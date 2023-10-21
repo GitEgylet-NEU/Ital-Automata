@@ -13,7 +13,7 @@ public class UIcontroller : MonoBehaviour
 
 	public Dispenser dispenser;
 	public GyroscopeHandler gyroHandler;
-	public GameObject settingsMenu;
+	public SettingsController settings;
 
 	//define base colors
 	public List<Color> colorList = new();
@@ -160,12 +160,6 @@ public class UIcontroller : MonoBehaviour
 	//setting on or off
 	public void ToggleSettings(ClickEvent evt)
 	{
-		Debug.Log("ToggleSettings");
-		if (settingsMenu.activeSelf == false)
-		{
-			settingsMenu.SetActive(true);
-			Debug.Log("be");
-		}
-		else { settingsMenu.SetActive(false); Debug.Log("ki"); }
+		settings.gameObject.SetActive(!settings.gameObject.activeSelf);
 	}
 }
