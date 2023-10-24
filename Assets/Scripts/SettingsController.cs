@@ -4,11 +4,12 @@ using UnityEngine.UIElements;
 public class SettingsController : MonoBehaviour
 {
 	public MusicScript musicScript;
+	public SoundEffects sfxScript;
 	
 	UIDocument mainDoc;
 	Button startButton, pauseButton, nextButton, closeButton;
 	Label trackLabel;
-	Slider volumeSlider;
+	Slider musicSlider, sfxSlider;
 
 	// Start is called before the first frame update
 	void Awake()
@@ -23,7 +24,8 @@ public class SettingsController : MonoBehaviour
 		nextButton = mainDoc.rootVisualElement.Q("nextTrack") as Button;
 		closeButton = mainDoc.rootVisualElement.Q("close") as Button;
 		trackLabel = mainDoc.rootVisualElement.Q("track") as Label;
-		volumeSlider = mainDoc.rootVisualElement.Q("volume") as Slider;
+		musicSlider = mainDoc.rootVisualElement.Q("musicVolume") as Slider;
+		sfxSlider = mainDoc.rootVisualElement.Q("sfxVolume") as Slider;
 
 		UpdateUI();
 
@@ -31,7 +33,8 @@ public class SettingsController : MonoBehaviour
 		pauseButton.RegisterCallback<ClickEvent>((_) => PauseMusic());
 		closeButton.RegisterCallback<ClickEvent>((_) => CloseSettings());
 		nextButton.RegisterCallback<ClickEvent>((_) => NextTrack());
-		volumeSlider.RegisterCallback<ChangeEvent<float>>(ChangeVolume);
+		musicSlider.RegisterCallback<ChangeEvent<float>>(ChangeMusicVolume);
+		sfxSlider.RegisterCallback<ChangeEvent<float>>(ChangeSFXVolume);
 	}
 	private void OnDisable()
 	{
@@ -39,7 +42,8 @@ public class SettingsController : MonoBehaviour
 		pauseButton.UnregisterCallback<ClickEvent>((_) => PauseMusic());
 		closeButton.UnregisterCallback<ClickEvent>((_) => CloseSettings());
 		nextButton.UnregisterCallback<ClickEvent>((_) => NextTrack());
-		volumeSlider.UnregisterCallback<ChangeEvent<float>>(ChangeVolume);
+		musicSlider.UnregisterCallback<ChangeEvent<float>>(ChangeMusicVolume);
+		sfxSlider.UnregisterCallback<ChangeEvent<float>>(ChangeSFXVolume);
 	}
 
 	void StartMusic()
@@ -57,9 +61,14 @@ public class SettingsController : MonoBehaviour
 		musicScript.Next();
 		UpdateUI();
 	}
-	void ChangeVolume(ChangeEvent<float> e)
+	void ChangeMusicVolume(ChangeEvent<float> e)
 	{
 		musicScript.SetVolume(e.newValue);
+		UpdateUI();
+	}
+	void ChangeSFXVolume(ChangeEvent<float> e)
+	{
+		sfxScript.SetVolume(e.newValue);
 		UpdateUI();
 	}
 
@@ -83,7 +92,8 @@ public class SettingsController : MonoBehaviour
 			
 			trackLabel.text = string.Empty;
 		}
-		volumeSlider.value = musicScript.GetVolume();
+		musicSlider.value = musicScript.GetVolume();
+		sfxSlider.value = sfxScript.GetVolume();
 	}
 
 	public void CloseSettings()

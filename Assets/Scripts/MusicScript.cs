@@ -26,7 +26,7 @@ public class MusicScript : MonoBehaviour
 	void Start()
 	{
 		Music = GetComponent<AudioSource>();
-		Music.volume = .5f;
+		Music.volume = .35f;
 		Music.clip = Resources.Load<AudioClip>("Audio/elevatormusic");
 		currentTrack = 0;
 		Music.Play();
